@@ -1,25 +1,18 @@
 # 🕵️ ALIBI
 
-**One mystery a day. Can you catch the liar?** A simple, story-driven daily puzzle game for Android.
+**One mystery a day, and you're the detective.** A story-driven daily puzzle game for Android.
 
-1. 🧩 **Find the clues.** 12 words, 3 hidden groups (like *Connections*). Each group you find unlocks a clue.
-2. 🔎 **Who did it?** Three suspects each give you their alibi. One of them is lying. Tap faces to stamp
-   them INNOCENT, then accuse the one who's left. You get two tries.
-3. 💬 **The confession.** The culprit tells you *why*, with a twist.
-4. 📏 **Bonus (optional).** Slide to a smart guess on a number question (a Fermi question).
+1. 🪪 **Your ID card.** Pick your name once; everyone in the game calls you "Inspector ___".
+2. 📞 **The midnight call.** The Commissioner phones with today's case, typed out letter by letter.
+3. 🔦 **Search the crime scene.** The room is dark. Drag your torch to find 3 pieces of evidence.
+4. 📌 **The evidence wall.** 12 notes pinned on cork. Tap 4 that belong together and red string ties them
+   (like *Connections*). Each group unlocks a witness statement. Constable Pandu gives hints.
+5. 💡 **The interrogation room.** Call in each suspect, show them statements, and watch them react.
+   Innocent people relax 😌. The liar starts sweating 💦. Your notebook fills itself in.
+6. 🚔 **The arrest.** Handcuffs, a CASE CLOSED stamp, and the culprit's confession with a twist.
+7. 📰 **Tomorrow's newspaper.** A front page about you, with your rating and a share button.
 
-You finish with a detective rank (🥇 Sherlock, 🥈 Inspector, 🥉 Constable, 🫠 Suspect), a daily
-streak, and a spoiler-free share card:
-
-```
-ALIBI #1 🥇 Sherlock (96)
-🟨🟨🟨🟨
-🟩🟩🟦🟩
-🟩🟩🟩🟩
-🟦🟦🟦🟦
-🕵️ Caught on the 1st try
-📏 Bonus 🔥
-```
+Solving cases promotes you: Rookie → Sub-Inspector → Inspector → ACP → Commissioner.
 
 ## Run it
 
@@ -36,41 +29,41 @@ Run the game-logic tests (no Android SDK needed):
 
 ```
 engine/   Plain Kotlin game rules, no Android code. Fully unit-tested.
-  board/    Step 1 word board (immutable state)
-  cases/    Case model, catch-the-culprit state, the daily case library
-  fermi/    Bonus question scoring
-  score/    Points, ranks, share card
+  board/    The evidence wall (immutable state)
+  cases/    Case content, the interrogation room, the daily case library
+  score/    Scoring, career ranks, the newspaper and share text
   logic/    Logic-grid puzzle generator, kept for a future "Detective mode"
 app/      Android app, Jetpack Compose UI
-  GameViewModel.kt   All screen state
-  ProgressStore.kt   Today's result + streak (SharedPreferences)
-  ui/                Home, Words, Suspects, Bonus and Result screens
+  GameViewModel.kt   All game state, one screen at a time
+  ProgressStore.kt   Name, career, streak and today's newspaper (SharedPreferences)
+  Sfx.kt             Built-in tones and vibration
+  ui/                Id/Desk, Call, Scene, Wall, Room, Arrest and News screens
 ```
 
 ## Scoring
 
-| Part | Points |
-|---|---|
-| 🧩 Clues found | up to 40 (−3 per wrong guess) |
-| 🔎 Culprit caught | 50 on the 1st try, 25 on the 2nd |
-| 📏 Bonus guess | up to 10 |
+Start at 100. Each snapped string costs 5, each missed statement 10, each hint 5, and each wrong
+arrest 25. If the culprit escapes, the score can't go above 30.
+90+ is ★★★ Sherlock, 70+ ★★ Sharp Inspector, 45+ ★ Constable on Duty.
 
 ## Writing a new case
 
 Add a `CaseFile` to `CaseLibrary.cases`:
 
-- a title, an intro, and one line about what happened,
-- 3 suspects, each with an emoji and an alibi in their own voice,
-- which suspect did it (vary the position!),
-- 3 word groups that match the story, and the clue each one unlocks.
-  Good clues clear two innocent suspects and catch the liar, so even 2 clues are enough to solve it,
-- the culprit's confession, ideally with a twist,
-- a bonus number question with its answer, reasoning and slider range.
+- a title, the Commissioner's call (`{name}` becomes the detective's name) and a one-line crime,
+- a crime scene: 3 pieces of evidence (emoji, position, what it means) and some background objects,
+- 3 word groups for the wall, each with the witness statement it unlocks and Pandu's hint,
+- 3 suspects with an alibi and a few small-talk lines; vary which chair the culprit sits in,
+- reactions: one statement that makes each innocent relax, and one that makes the culprit sweat,
+- what the Commissioner says when an innocent is arrested,
+- the confession, what happens if they escape, and the detective's quote for the newspaper.
+
+The tests check that only the culprit ever gets nervous and that every innocent can be cleared.
 
 ## Roadmap
 
-- [ ] Daily 8 AM "new case is in 🔍" notification (WorkManager)
+- [ ] Daily "📞 New case" notification at midnight (WorkManager)
 - [ ] Load cases from a server instead of shipping them in the app
-- [ ] Detective mode: 4 suspects, weapons and rooms, with a logic grid (generator already in `engine/logic`)
+- [ ] Office that grows with your rank, and a cabinet of solved case files
+- [ ] Rain and noir music
 - [ ] Friend Case: make a mystery starring your friends and send it as a link
-- [ ] Weekly story arc that builds to a Sunday reveal
