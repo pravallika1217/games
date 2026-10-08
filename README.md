@@ -1,24 +1,24 @@
 # 🕵️ ALIBI
 
-**One mystery a day, solved in three acts.** A daily puzzle game for Android that combines
-*Connections*, *Murdle* and Fermi estimation questions.
+**One mystery a day. Can you catch the liar?** A simple, story-driven daily puzzle game for Android.
 
-| Act | Like | What you do |
-|---|---|---|
-| 1. Evidence Board | Connections | Sort 16 words into 4 groups. Each group unlocks a clue. |
-| 2. The Deduction | Murdle | Use the clues to find **who**, **with what**, and **where**. |
-| 3. The Final Call | Fermi | Make a smart number guess. The closer you are, the more points you get. |
+1. 🧩 **Find the clues.** 12 words, 3 hidden groups (like *Connections*). Each group you find unlocks a clue.
+2. 🔎 **Who did it?** Three suspects each give you their alibi. One of them is lying. Tap faces to stamp
+   them INNOCENT, then accuse the one who's left. You get two tries.
+3. 💬 **The confession.** The culprit tells you *why*, with a twist.
+4. 📏 **Bonus (optional).** Slide to a smart guess on a number question (a Fermi question).
 
 You finish with a detective rank (🥇 Sherlock, 🥈 Inspector, 🥉 Constable, 🫠 Suspect), a daily
 streak, and a spoiler-free share card:
 
 ```
-ALIBI #1 🥈 Inspector (78)
+ALIBI #1 🥇 Sherlock (96)
 🟨🟨🟨🟨
-🟦🟦🟦🟪
+🟩🟩🟦🟩
 🟩🟩🟩🟩
-🔎 Who ✅ What ✅ Where ❌
-📏 Fermi 🔥
+🟦🟦🟦🟦
+🕵️ Caught on the 1st try
+📏 Bonus 🔥
 ```
 
 ## Run it
@@ -36,48 +36,41 @@ Run the game-logic tests (no Android SDK needed):
 
 ```
 engine/   Plain Kotlin game rules, no Android code. Fully unit-tested.
-  logic/    Puzzle generator, human-style solver, brute-force uniqueness check, grid notes
-  board/    Act 1 evidence board (immutable state)
-  fermi/    Act 3 scoring
-  cases/    Case model, clue sentences, the daily case library
+  board/    Step 1 word board (immutable state)
+  cases/    Case model, catch-the-culprit state, the daily case library
+  fermi/    Bonus question scoring
   score/    Points, ranks, share card
+  logic/    Logic-grid puzzle generator, kept for a future "Detective mode"
 app/      Android app, Jetpack Compose UI
   GameViewModel.kt   All screen state
   ProgressStore.kt   Today's result + streak (SharedPreferences)
-  ui/                Home, Board, Deduction, Fermi and Result screens
+  ui/                Home, Words, Suspects, Bonus and Result screens
 ```
 
-## How the daily logic puzzle is made
+## Scoring
 
-Nobody writes logic grids by hand. For each case, `PuzzleGenerator`:
+| Part | Points |
+|---|---|
+| 🧩 Clues found | up to 40 (−3 per wrong guess) |
+| 🔎 Culprit caught | 50 on the 1st try, 25 on the 2nd |
+| 📏 Bonus guess | up to 10 |
 
-1. picks a random hidden solution,
-2. adds true clues (mostly "not" and "either/or" clues) until a solver that only uses
-   human-style deductions can finish the grid,
-3. removes every clue that isn't needed.
+## Writing a new case
 
-The tests check hundreds of seeds and confirm every puzzle has **exactly one answer**, can be
-**solved without guessing**, and that **every clue is needed**. The bonus clues from Act 1 never
-name the culprit, so missing them makes Act 2 harder but never impossible.
+Add a `CaseFile` to `CaseLibrary.cases`:
 
-## Adding a new case
-
-Add a `CaseFile` to `CaseLibrary.cases`. You write only the creative parts:
-
-- the title and story intro,
-- 4 suspects, 4 weapons and 4 places (with emoji),
-- 16 board words in 4 groups (level 0 = easiest, 3 = trickiest; add red herrings),
-- one Fermi question with its answer and reasoning.
-
-The logic puzzle is generated from `logicSeed`. When the library runs out, cases repeat with a
-new seed, so the deduction is new each time.
+- a title, an intro, and one line about what happened,
+- 3 suspects, each with an emoji and an alibi in their own voice,
+- which suspect did it (vary the position!),
+- 3 word groups that match the story, and the clue each one unlocks.
+  Good clues clear two innocent suspects and catch the liar, so even 2 clues are enough to solve it,
+- the culprit's confession, ideally with a twist,
+- a bonus number question with its answer, reasoning and slider range.
 
 ## Roadmap
 
 - [ ] Daily 8 AM "new case is in 🔍" notification (WorkManager)
-- [ ] Load cases from a server (Firestore / JSON on a CDN) instead of shipping them in the app
-- [ ] Save progress mid-case
-- [ ] Weekly story arc: Monday to Saturday cases build to a Sunday reveal
-- [ ] Friend Case: make a case starring your friends and send it as a link
-- [ ] Duel: race a friend on the same case
-- [ ] Detective Pass: case archive, hints, no ads
+- [ ] Load cases from a server instead of shipping them in the app
+- [ ] Detective mode: 4 suspects, weapons and rooms, with a logic grid (generator already in `engine/logic`)
+- [ ] Friend Case: make a mystery starring your friends and send it as a link
+- [ ] Weekly story arc that builds to a Sunday reveal

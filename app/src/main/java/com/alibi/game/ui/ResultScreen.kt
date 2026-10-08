@@ -35,9 +35,9 @@ fun ResultScreen(vm: GameViewModel) {
         // The breakdown is only known right after playing; a reopened app just shows the share card.
         if (card != null) {
             Panel {
-                ScoreRow("Evidence Board", card.boardPoints, "30%")
-                ScoreRow("Deduction", card.logicPoints, "50%")
-                ScoreRow("Final Call", card.fermiPoints, "20%")
+                ScoreRow("🧩 Clues found", card.boardPoints, 40)
+                ScoreRow("🔎 Culprit caught", card.catchPoints, 50)
+                ScoreRow("📏 Bonus guess", card.bonusPoints, 10)
             }
         }
 
@@ -69,9 +69,9 @@ fun ResultScreen(vm: GameViewModel) {
 }
 
 @Composable
-private fun ScoreRow(label: String, points: Int, weight: String) {
+private fun ScoreRow(label: String, points: Int, outOf: Int) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text("$label  ·  $weight", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("$points", fontWeight = FontWeight.Bold)
+        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("$points / $outOf", fontWeight = FontWeight.Bold)
     }
 }

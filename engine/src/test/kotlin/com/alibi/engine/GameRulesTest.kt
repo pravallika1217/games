@@ -3,20 +3,18 @@ package com.alibi.engine
 import com.alibi.engine.board.BoardState
 import com.alibi.engine.board.EvidenceGroup
 import com.alibi.engine.board.GuessResult
-import com.alibi.engine.cases.Accusation
 import com.alibi.engine.cases.CaseLibrary
+import com.alibi.engine.cases.CatchState
 import com.alibi.engine.fermi.FermiScorer
 import com.alibi.engine.fermi.FermiVerdict
-import com.alibi.engine.logic.DeductionNotes
-import com.alibi.engine.logic.Mark
-import com.alibi.engine.logic.room
-import com.alibi.engine.logic.suspect
 import com.alibi.engine.score.Rank
 import com.alibi.engine.score.Scoring
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GameRulesTest {
@@ -25,14 +23,13 @@ class GameRulesTest {
         EvidenceGroup("A", listOf("a1", "a2", "a3", "a4"), 0),
         EvidenceGroup("B", listOf("b1", "b2", "b3", "b4"), 1),
         EvidenceGroup("C", listOf("c1", "c2", "c3", "c4"), 2),
-        EvidenceGroup("D", listOf("d1", "d2", "d3", "d4"), 3),
     )
 
     @Test
     fun `correct guess removes the group`() {
         val (board, result) = BoardState.start(groups, Random(1)).submit(setOf("b1", "b2", "b3", "b4"))
         assertEquals(GuessResult.Correct(1), result)
-        assertEquals(12, board.tiles.size)
+        assertEquals(8, board.tiles.size)
         assertEquals(listOf(1), board.solvedOrder)
         assertEquals(0, board.mistakes)
     }
@@ -57,62 +54,85 @@ class GameRulesTest {
     fun `four mistakes ends the board`() {
         var board = BoardState.start(groups)
         listOf(
-            setOf("a1", "b1", "c1", "d1"), setOf("a2", "b2", "c2", "d2"),
-            setOf("a3", "b3", "c3", "d3"), setOf("a4", "b4", "c4", "d4"),
+            setOf("a1", "a2", "b1", "c1"), setOf("a1", "b2", "b3", "c2"),
+            setOf("a2", "b4", "c3", "c4"), setOf("a3", "a4", "b1", "c1"),
         ).forEach { board = board.submit(it).first }
         assertTrue(board.isLost)
         assertIs<GuessResult.GameOver>(board.submit(setOf("a1", "a2", "a3", "a4")).second)
     }
 
     @Test
-    fun `fermi scoring rewards being close`() {
+    fun `wrong accusation leaves one more try`() {
+        var catch = CatchState(culprit = 2, suspectCount = 3)
+        catch = catch.accuse(0)
+        assertFalse(catch.isOver)
+        assertEquals(1, catch.triesLeft)
+        assertTrue(0 in catch.cleared)
+        catch = catch.accuse(2)
+        assertTrue(catch.caught)
+        assertEquals(25, Scoring.catchPoints(catch))
+    }
+
+    @Test
+    fun `two wrong accusations and the culprit gets away`() {
+        val catch = CatchState(culprit = 2, suspectCount = 3).accuse(0).accuse(1)
+        assertTrue(catch.isOver)
+        assertFalse(catch.caught)
+        assertEquals(0, Scoring.catchPoints(catch))
+        assertEquals(catch, catch.accuse(2))
+    }
+
+    @Test
+    fun `stamping two innocents leaves one suspect standing`() {
+        val start = CatchState(culprit = 1, suspectCount = 3)
+        assertNull(start.lastOneStanding)
+        val notes = start.toggleCleared(0).toggleCleared(2)
+        assertEquals(1, notes.lastOneStanding)
+        assertNull(notes.toggleCleared(2).lastOneStanding)
+    }
+
+    @Test
+    fun `bonus scoring rewards being close`() {
         assertEquals(100, FermiScorer.score(85.0, 85.0))
         assertEquals(70, FermiScorer.score(170.0, 85.0))
         assertEquals(70, FermiScorer.score(42.5, 85.0))
         assertEquals(0, FermiScorer.score(10_000.0, 85.0))
-        assertEquals(0, FermiScorer.score(0.0, 85.0))
-        assertEquals(FermiVerdict.BULLSEYE, FermiScorer.outcome(90.0, CaseLibrary.cases[0].fermi).verdict)
-        assertEquals(FermiVerdict.WARM, FermiScorer.outcome(160.0, CaseLibrary.cases[0].fermi).verdict)
+        val bonus = CaseLibrary.cases[0].bonus
+        assertEquals(FermiVerdict.BULLSEYE, FermiScorer.outcome(90.0, bonus).verdict)
+        assertEquals(FermiVerdict.WARM, FermiScorer.outcome(160.0, bonus).verdict)
     }
 
     @Test
-    fun `checking a cell crosses its row and column`() {
-        val notes = DeductionNotes()
-            .cycle(suspect(0), room(1), 3)
-            .cycle(suspect(0), room(1), 3)
-        assertEquals(Mark.CHECK, notes[suspect(0), room(1)])
-        assertEquals(Mark.CROSS, notes[room(1), suspect(2)])
-        assertEquals(Mark.CROSS, notes[suspect(0), room(0)])
-        assertEquals(Mark.EMPTY, notes[suspect(1), room(0)])
-        assertEquals(Mark.EMPTY, notes.cycle(suspect(0), room(1), 3)[suspect(0), room(1)])
-    }
-
-    @Test
-    fun `every authored case is playable for months`() {
-        for (day in 0L until 120L) {
+    fun `every case is well formed and the schedule cycles`() {
+        for (day in 0L until 30L) {
             val case = CaseLibrary.forDay(CaseLibrary.LAUNCH_DAY + day)
             assertEquals(day.toInt() + 1, case.number)
-            assertEquals(4, case.bonusClues.size)
-            assertTrue(case.clues.all { it.endsWith(".") && it.first().isUpperCase() })
-            BoardState.start(case.file.groups) // validates unique tiles
-            val p = case.puzzle
-            assertTrue(case.accuse(Accusation(p.culprit, p.crimeWeapon, p.crimeRoom)).solved)
+            BoardState.start(case.file.groups) // checks all 12 words are unique
         }
+        // The culprit shouldn't always sit in the same spot.
+        assertTrue(CaseLibrary.cases.map { it.culprit }.toSet().size > 1)
     }
 
     @Test
-    fun `perfect game makes Sherlock and share card hides answers`() {
+    fun `perfect game is Sherlock and the share card has no spoilers`() {
         val case = CaseLibrary.forDay(CaseLibrary.LAUNCH_DAY)
         var board = BoardState.start(case.file.groups)
         case.file.groups.forEach { board = board.submit(it.items.toSet()).first }
-        val p = case.puzzle
-        val accusation = case.accuse(Accusation(p.culprit, p.crimeWeapon, p.crimeRoom))
-        val card = Scoring.score(case.number, board, accusation, case.fermiOutcome(case.file.fermi.answer))
+        val catch = case.startCatch().accuse(case.file.culprit)
+        val card = Scoring.score(case.number, board, catch, case.bonusOutcome(case.file.bonus.answer))
         assertEquals(100, card.total)
         assertEquals(Rank.SHERLOCK, card.rank)
-        assertTrue(case.theme.suspects.none { it.name in card.shareText })
-        println(card.shareText)
-        println(case.clues.joinToString("\n"))
-        println(case.finalClue)
+        assertTrue(case.file.suspects.none { it.name in card.shareText })
+    }
+
+    @Test
+    fun `skipping the bonus still allows Sherlock`() {
+        val case = CaseLibrary.forDay(CaseLibrary.LAUNCH_DAY)
+        var board = BoardState.start(case.file.groups)
+        case.file.groups.forEach { board = board.submit(it.items.toSet()).first }
+        val card = Scoring.score(case.number, board, case.startCatch().accuse(case.file.culprit), bonus = null)
+        assertEquals(90, card.total)
+        assertEquals(Rank.SHERLOCK, card.rank)
+        assertTrue(card.shareText.endsWith("📏 Bonus skipped"))
     }
 }

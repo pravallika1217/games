@@ -25,24 +25,19 @@ fun HomeScreen(vm: GameViewModel) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("🕵️", fontSize = 56.sp)
             Text("ALIBI", fontSize = 40.sp, fontWeight = FontWeight.Black, letterSpacing = 8.sp, color = MaterialTheme.colorScheme.primary)
-            Text("One case a day. Three acts. One culprit.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("One mystery a day. Can you catch the liar?", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(8.dp))
         Panel {
             Text("CASE #${case.number}", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, letterSpacing = 2.sp, fontSize = 12.sp)
             Text(case.file.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(case.file.intro, lineHeight = 21.sp)
-            Text(
-                "Difficulty: ${case.puzzle.difficulty.name.lowercase().replaceFirstChar { it.uppercase() }}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 13.sp,
-            )
         }
         Panel {
-            Text("How it works", fontWeight = FontWeight.Bold)
-            Text("1. Evidence Board: sort 16 words into 4 groups. Each group unlocks a clue.")
-            Text("2. Deduction: use the clues to find who, with what, and where.")
-            Text("3. Final Call: make a smart guess on a number. Closer = more points.")
+            Text("How to play", fontWeight = FontWeight.Bold)
+            Text("🧩  Find word groups. Each one unlocks a clue.")
+            Text("🔎  Read the alibis. Catch the one who's lying.")
+            Text("🏆  Share your detective rank with friends!")
         }
         if (vm.streak > 0) {
             Text("🔥 ${vm.streak}-day streak", Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)

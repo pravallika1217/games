@@ -1,7 +1,7 @@
 package com.alibi.engine.score
 
 import com.alibi.engine.board.BoardState
-import com.alibi.engine.cases.AccusationResult
+import com.alibi.engine.cases.CatchState
 import com.alibi.engine.fermi.FermiOutcome
 import kotlin.math.roundToInt
 
@@ -18,32 +18,37 @@ enum class Rank(val title: String, val emoji: String, val minScore: Int) {
 
 data class ScoreCard(
     val boardPoints: Int,
-    val logicPoints: Int,
-    val fermiPoints: Int,
+    val catchPoints: Int,
+    val bonusPoints: Int,
     val total: Int,
     val rank: Rank,
     val shareText: String,
 )
 
 /**
- * Combines the three acts. The deduction weighs most, since it's the heart of the case;
- * the board and the Fermi guess make sure everyone still walks away with something.
+ * Words: up to 40. Catching the culprit: 50 first try, 25 second try. Bonus guess: up to 10.
  */
 object Scoring {
     private val LEVEL_SQUARES = listOf("🟨", "🟩", "🟦", "🟪")
 
     fun boardPoints(board: BoardState): Int =
-        (board.solvedOrder.size * 25 - board.mistakes * 5).coerceIn(0, 100)
+        (board.solvedOrder.size * 40 / board.groups.size - board.mistakes * 3).coerceIn(0, 40)
 
-    fun logicPoints(result: AccusationResult): Int =
-        (if (result.who) 50 else 0) + (if (result.what) 25 else 0) + (if (result.where) 25 else 0)
+    fun catchPoints(catch: CatchState): Int = when {
+        !catch.caught -> 0
+        catch.wrongGuesses.isEmpty() -> 50
+        else -> 25
+    }
 
-    fun score(caseNumber: Int, board: BoardState, accusation: AccusationResult, fermi: FermiOutcome): ScoreCard {
+    fun bonusPoints(bonus: FermiOutcome?): Int = ((bonus?.score ?: 0) / 10.0).roundToInt()
+
+    fun score(caseNumber: Int, board: BoardState, catch: CatchState, bonus: FermiOutcome?): ScoreCard {
         val boardPts = boardPoints(board)
-        val logicPts = logicPoints(accusation)
-        val total = (boardPts * 0.3 + logicPts * 0.5 + fermi.score * 0.2).roundToInt()
+        val catchPts = catchPoints(catch)
+        val bonusPts = bonusPoints(bonus)
+        val total = boardPts + catchPts + bonusPts
         val rank = Rank.forScore(total)
-        return ScoreCard(boardPts, logicPts, fermi.score, total, rank, shareText(caseNumber, total, rank, board, accusation, fermi))
+        return ScoreCard(boardPts, catchPts, bonusPts, total, rank, shareText(caseNumber, total, rank, board, catch, bonus))
     }
 
     /** A spoiler-free result card, like Wordle's grid. */
@@ -52,13 +57,18 @@ object Scoring {
         total: Int,
         rank: Rank,
         board: BoardState,
-        accusation: AccusationResult,
-        fermi: FermiOutcome,
+        catch: CatchState,
+        bonus: FermiOutcome?,
     ): String = buildString {
         appendLine("ALIBI #$caseNumber ${rank.emoji} ${rank.title} ($total)")
         board.guessHistory.forEach { guess -> appendLine(guess.joinToString("") { LEVEL_SQUARES[it] }) }
-        fun tick(ok: Boolean) = if (ok) "✅" else "❌"
-        appendLine("🔎 Who ${tick(accusation.who)} What ${tick(accusation.what)} Where ${tick(accusation.where)}")
-        append("📏 Fermi ${fermi.verdict.emoji}")
+        appendLine(
+            when {
+                catch.caught && catch.wrongGuesses.isEmpty() -> "🕵️ Caught on the 1st try"
+                catch.caught -> "🕵️ Caught on the 2nd try"
+                else -> "🏃 The culprit got away"
+            }
+        )
+        append(if (bonus != null) "📏 Bonus ${bonus.verdict.emoji}" else "📏 Bonus skipped")
     }
 }

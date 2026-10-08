@@ -35,9 +35,9 @@ fun AlibiApp(vm: GameViewModel = viewModel()) {
     ) {
         when (vm.screen) {
             Screen.Home -> HomeScreen(vm)
-            Screen.Board -> BoardScreen(vm)
-            Screen.Deduction -> DeductionScreen(vm)
-            Screen.Fermi -> FermiScreen(vm)
+            Screen.Words -> WordsScreen(vm)
+            Screen.Suspects -> SuspectsScreen(vm)
+            Screen.Bonus -> BonusScreen(vm)
             Screen.Result -> ResultScreen(vm)
         }
     }
@@ -56,9 +56,9 @@ fun ScreenColumn(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun ActHeader(act: String, title: String, hint: String) {
+fun StepHeader(step: String, title: String, hint: String) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(act.uppercase(), color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+        Text(step.uppercase(), color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
         Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         Text(hint, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
     }

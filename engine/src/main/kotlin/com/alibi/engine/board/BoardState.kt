@@ -2,7 +2,7 @@ package com.alibi.engine.board
 
 import kotlin.random.Random
 
-/** One hidden group on the Act 1 board. [level] 0–3 runs from easiest (yellow) to trickiest (purple). */
+/** One hidden group on the Step 1 word board. [level] 0–3 runs from easiest (yellow) to trickiest (purple). */
 data class EvidenceGroup(val title: String, val items: List<String>, val level: Int) {
     init {
         require(items.size == 4) { "A group needs exactly 4 items" }
@@ -20,7 +20,7 @@ sealed interface GuessResult {
 }
 
 /**
- * Act 1, the Connections-style evidence board. Immutable: every action returns a new state,
+ * Step 1, the Connections-style word board. Immutable: every action returns a new state,
  * which keeps it easy to test and easy to show in Compose.
  */
 data class BoardState(

@@ -4,14 +4,19 @@ import kotlin.math.log10
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-/** Act 3: a question nobody knows exactly, answered with a smart estimate. */
+/** The bonus question: nobody knows the exact answer, so you make a smart estimate. */
 data class FermiQuestion(
     val prompt: String,
     val answer: Double,
     val unit: String,
     /** The step-by-step reasoning shown after the guess. */
     val explanation: String,
-)
+    /** Range of the guess slider. */
+    val min: Double = 1.0,
+    val max: Double = 1_000_000.0,
+) {
+    init { require(min > 0 && answer in min..max) { "Answer must be inside the slider range" } }
+}
 
 enum class FermiVerdict(val emoji: String, val label: String, val maxRatio: Double) {
     BULLSEYE("🎯", "Bullseye: within 10%", 1.1),

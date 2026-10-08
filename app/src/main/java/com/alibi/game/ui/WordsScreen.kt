@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,17 +31,22 @@ import com.alibi.engine.board.EvidenceGroup
 import com.alibi.game.GameViewModel
 
 @Composable
-fun BoardScreen(vm: GameViewModel) {
+fun WordsScreen(vm: GameViewModel) {
     val board = vm.board
     ScreenColumn {
-        ActHeader("Act 1 of 3", "Evidence Board", "Find 4 groups of 4. Every group you solve unlocks a clue for Act 2.")
+        StepHeader("Step 1 of 2", "Find the clues 🧩", "Tap 4 words that belong together. Each group you find unlocks a clue!")
 
-        board.solvedOrder.forEach { index ->
-            GroupBanner(board.groups[index], clue = vm.case.bonusClues[index])
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(
+                "Clues found: " + board.groups.indices.joinToString(" ") { if (vm.isClueUnlocked(it)) "🔓" else "🔒" },
+                fontWeight = FontWeight.SemiBold,
+            )
         }
+
+        board.solvedOrder.forEach { index -> GroupBanner(board.groups[index], found = true) }
         if (board.isLost) {
             board.groups.indices.filterNot { it in board.solvedOrder }.forEach { index ->
-                GroupBanner(board.groups[index], clue = null)
+                GroupBanner(board.groups[index], found = false)
             }
         }
 
@@ -63,7 +70,7 @@ fun BoardScreen(vm: GameViewModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Mistakes left: ", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text("Tries left: ", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 repeat(board.maxMistakes) { i ->
                     Box(
                         Modifier
@@ -89,10 +96,20 @@ fun BoardScreen(vm: GameViewModel) {
                 }
             }
         } else {
-            Button(onClick = vm::goToDeduction, modifier = Modifier.fillMaxWidth()) {
-                Text("Take the clues to Act 2 →", Modifier.padding(vertical = 6.dp))
+            Button(onClick = vm::goToSuspects, modifier = Modifier.fillMaxWidth()) {
+                Text("Meet the suspects 🕵️", Modifier.padding(vertical = 6.dp))
             }
         }
+    }
+
+    vm.newClue?.let { clue ->
+        AlertDialog(
+            onDismissRequest = vm::dismissClue,
+            confirmButton = { TextButton(onClick = vm::dismissClue) { Text("Got it!") } },
+            title = { Text("📜 New clue!") },
+            text = { Text(clue, fontSize = 17.sp, lineHeight = 24.sp) },
+            containerColor = MaterialTheme.colorScheme.surface,
+        )
     }
 }
 
@@ -119,25 +136,20 @@ private fun Tile(text: String, selected: Boolean, modifier: Modifier, onClick: (
     }
 }
 
-/** A solved (or revealed) group. A [clue] is shown only for groups the player actually solved. */
+/** A group the player found, or (faded) one revealed after running out of tries. */
 @Composable
-private fun GroupBanner(group: EvidenceGroup, clue: String?) {
+private fun GroupBanner(group: EvidenceGroup, found: Boolean) {
     Column(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(AlibiColors.Levels[group.level].copy(alpha = if (clue != null) 1f else 0.45f))
+            .background(AlibiColors.Levels[group.level].copy(alpha = if (found) 1f else 0.45f))
             .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         Text(group.title.uppercase(), color = Color.Black, fontWeight = FontWeight.Black, fontSize = 14.sp)
         Text(group.items.joinToString(", "), color = Color.Black, fontSize = 13.sp)
-        Text(
-            if (clue != null) "🔓 $clue" else "🔒 Clue lost",
-            color = Color.Black.copy(alpha = 0.8f),
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center,
-        )
+        Text(if (found) "🔓 Clue unlocked" else "🔒 Clue missed", color = Color.Black.copy(alpha = 0.75f), fontSize = 12.sp)
     }
 }
