@@ -20,11 +20,17 @@ enum class Mood { CALM, NERVOUS, RELIEVED }
 /** How a suspect reacts when shown a statement, and what the detective writes down. */
 data class Reaction(val mood: Mood, val line: String, val note: String)
 
-/** A witness statement, unlocked by connecting one group on the evidence wall. */
-data class Statement(val label: String, val text: String, val hint: String)
+/**
+ * A witness on the evidence wall. They [ask] the detective to find the 4 notes of one group,
+ * then give their statement ([text]), which becomes a piece of evidence called [label].
+ */
+data class Statement(val witness: String, val ask: String, val label: String, val text: String)
 
-/** Something in the dark crime scene. Positions are fractions of the scene's width and height. */
-data class SceneItem(val emoji: String, val x: Float, val y: Float, val text: String = "")
+/**
+ * Something in the dark crime scene. Positions are fractions of the scene's width and height.
+ * Evidence has a [name] and a [text] saying what it means; background objects leave them empty.
+ */
+data class SceneItem(val emoji: String, val x: Float, val y: Float, val name: String = "", val text: String = "")
 
 data class CrimeScene(
     val place: String,
@@ -46,8 +52,10 @@ data class CaseFile(
     /** One line about what happened, the first note in the notebook. */
     val crime: String,
     val scene: CrimeScene,
-    /** Evidence wall groups. Connecting group `i` unlocks `statements[i]`. */
+    /** Evidence wall groups. Finding group `i` unlocks `statements[i]`. */
     val groups: List<EvidenceGroup>,
+    /** Trick notes on the wall that no witness asks for. */
+    val decoys: List<String>,
     val statements: List<Statement>,
     val suspects: List<Suspect>,
     /** Index into [suspects]. */

@@ -1,8 +1,8 @@
 package com.alibi.engine
 
-import com.alibi.engine.board.BoardState
 import com.alibi.engine.board.EvidenceGroup
-import com.alibi.engine.board.GuessResult
+import com.alibi.engine.board.TapResult
+import com.alibi.engine.board.WallState
 import com.alibi.engine.cases.CaseLibrary
 import com.alibi.engine.cases.Interrogation
 import com.alibi.engine.cases.Mood
@@ -14,59 +14,77 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class GameRulesTest {
 
     private val groups = listOf(
-        EvidenceGroup("A", listOf("a1", "a2", "a3", "a4"), 0),
-        EvidenceGroup("B", listOf("b1", "b2", "b3", "b4"), 1),
-        EvidenceGroup("C", listOf("c1", "c2", "c3", "c4"), 2),
+        EvidenceGroup("A", listOf("a1", "a2", "a3", "a4")),
+        EvidenceGroup("B", listOf("b1", "b2", "b3", "b4")),
+        EvidenceGroup("C", listOf("c1", "c2", "c3", "c4")),
     )
     private val sangeet = CaseLibrary.cases[0]
 
-    private fun solvedBoard(groups: List<EvidenceGroup>): BoardState {
-        var board = BoardState.start(groups)
-        groups.forEach { board = board.submit(it.items.toSet()).first }
-        return board
+    private fun solvedWall(groups: List<EvidenceGroup>): WallState {
+        var wall = WallState.start(groups)
+        groups.forEach { g -> g.items.forEach { wall = wall.tap(it).first } }
+        return wall
     }
 
     // ---- Evidence wall ----
 
     @Test
-    fun `correct guess removes the group`() {
-        val (board, result) = BoardState.start(groups, Random(1)).submit(setOf("b1", "b2", "b3", "b4"))
-        assertEquals(GuessResult.Correct(1), result)
-        assertEquals(8, board.tiles.size)
-        assertEquals(listOf(1), board.solvedOrder)
+    fun `witnesses ask in order and the 4th right note finishes the task`() {
+        var wall = WallState.start(groups, random = Random(1))
+        assertEquals("A", wall.current?.title)
+        listOf("a1", "a2", "a3").forEach { assertEquals(TapResult.Pinned, wall.tap(it).also { r -> wall = r.first }.second) }
+        val (done, result) = wall.tap("a4")
+        assertEquals(TapResult.TaskDone(0), result)
+        assertEquals("B", done.current?.title)
+        assertEquals(8, done.tiles.size)
+        assertEquals(listOf(0), done.solved)
     }
 
     @Test
-    fun `three of a group is one away and costs a mistake`() {
-        val (board, result) = BoardState.start(groups).submit(setOf("a1", "a2", "a3", "b1"))
-        assertEquals(GuessResult.OneAway, result)
-        assertEquals(1, board.mistakes)
-    }
-
-    @Test
-    fun `repeating a guess is free`() {
-        val guess = setOf("a1", "a2", "b1", "b2")
-        val (once, _) = BoardState.start(groups).submit(guess)
-        val (twice, result) = once.submit(guess)
-        assertEquals(GuessResult.AlreadyTried, result)
+    fun `a wrong note costs chai once`() {
+        val (once, result) = WallState.start(groups).tap("b1")
+        assertEquals(TapResult.Wrong, result)
+        assertEquals(1, once.mistakes)
+        val (twice, again) = once.tap("b1")
+        assertEquals(TapResult.Ignored, again)
         assertEquals(1, twice.mistakes)
     }
 
     @Test
-    fun `four mistakes ends the wall`() {
-        var board = BoardState.start(groups)
-        listOf(
-            setOf("a1", "a2", "b1", "c1"), setOf("a1", "b2", "b3", "c2"),
-            setOf("a2", "b4", "c3", "c4"), setOf("a3", "a4", "b1", "c1"),
-        ).forEach { board = board.submit(it).first }
-        assertTrue(board.isLost)
-        assertIs<GuessResult.GameOver>(board.submit(setOf("a1", "a2", "a3", "a4")).second)
+    fun `tapping a pinned note does nothing`() {
+        val (once, _) = WallState.start(groups).tap("a1")
+        assertEquals(TapResult.Ignored, once.tap("a1").second)
+    }
+
+    @Test
+    fun `running out of chai ends the wall and misses the rest`() {
+        var wall = WallState.start(groups).tap("a1").first
+        listOf("b1", "b2", "c1").forEach { wall = wall.tap(it).first }
+        val (over, result) = wall.tap("c2")
+        assertEquals(TapResult.OutOfPatience, result)
+        assertTrue(over.isOver)
+        assertEquals(listOf(0, 1, 2), over.missed)
+        assertEquals(TapResult.Ignored, over.tap("a2").second)
+    }
+
+    @Test
+    fun `decoys are on the wall but never right`() {
+        val wall = WallState.start(groups, listOf("x1", "x2"))
+        assertEquals(14, wall.tiles.size)
+        assertEquals(TapResult.Wrong, wall.tap("x1").second)
+    }
+
+    @Test
+    fun `pandu's hint points at a right note`() {
+        val wall = WallState.start(groups).tap("a1").first.hint()!!
+        assertEquals(1, wall.hintsUsed)
+        assertEquals(setOf("a2"), wall.hinted)
+        assertTrue(wall.hinted.all { it in groups[0].items })
     }
 
     // ---- Interrogation ----
@@ -122,24 +140,23 @@ class GameRulesTest {
 
     @Test
     fun `perfect case is Sherlock`() {
-        val v = Scoring.verdict(solvedBoard(sangeet.groups), 0, Interrogation.start(sangeet).arrest(sangeet.culprit))
+        val v = Scoring.verdict(solvedWall(sangeet.groups), Interrogation.start(sangeet).arrest(sangeet.culprit))
         assertEquals(100, v.points)
         assertEquals(3, v.stars)
     }
 
     @Test
     fun `mistakes hints and wrong arrests cost points`() {
-        var board = BoardState.start(sangeet.groups)
-        board = board.submit(setOf("Jalebi", "Kite", "Ear", "Laddu")).first
-        sangeet.groups.forEach { board = board.submit(it.items.toSet()).first }
+        var wall = WallState.start(sangeet.groups).tap("Kite").first.hint()!!
+        sangeet.groups.forEach { g -> g.items.forEach { wall = wall.tap(it).first } }
         val room = Interrogation.start(sangeet).arrest(0).arrest(sangeet.culprit)
-        assertEquals(100 - 5 - 5 - 25, Scoring.verdict(board, hintsUsed = 1, room = room).points)
+        assertEquals(100 - 5 - 5 - 25, Scoring.verdict(wall, room).points)
     }
 
     @Test
     fun `escape caps the score`() {
         val room = Interrogation.start(sangeet).arrest(0).arrest(1)
-        val v = Scoring.verdict(solvedBoard(sangeet.groups), 0, room)
+        val v = Scoring.verdict(solvedWall(sangeet.groups), room)
         assertTrue(v.points <= 30)
         assertEquals(0, v.stars)
     }
@@ -147,7 +164,7 @@ class GameRulesTest {
     @Test
     fun `newspaper stars the detective and the share text has no spoilers`() {
         for (file in CaseLibrary.cases) {
-            val page = Newspaper.write(file, "Pravallika", 4, solvedBoard(file.groups), 0, Interrogation.start(file).arrest(file.culprit))
+            val page = Newspaper.write(file, "Pravallika", 4, solvedWall(file.groups), Interrogation.start(file).arrest(file.culprit))
             assertTrue("Pravallika" in page.headline)
             assertTrue("4 minutes" in page.headline)
             file.suspects.forEach { assertFalse(it.name in page.shareText, "share text names ${it.name}") }
@@ -168,7 +185,10 @@ class GameRulesTest {
     @Test
     fun `every case can be solved by interrogation`() {
         for (file in CaseLibrary.cases) {
-            BoardState.start(file.groups) // all 12 notes are unique
+            WallState.start(file.groups, file.decoys) // all 16 notes are unique
+            assertEquals(4, file.decoys.size)
+            file.scene.evidence.forEach { assertTrue(it.name.isNotBlank()) }
+            file.statements.forEach { assertTrue("Find 4" in it.ask || "Find the 4" in it.ask, it.witness) }
             val nervous = file.reactions.values.flatMap { it.entries }.filter { it.value.mood == Mood.NERVOUS }.map { it.key }
             assertEquals(listOf(file.culprit), nervous, "${file.title}: only the culprit should get nervous")
             val cleared = file.reactions.values.flatMap { it.entries }.filter { it.value.mood == Mood.RELIEVED }.map { it.key }.toSet()

@@ -98,7 +98,7 @@ fun RoomScreen(vm: GameViewModel) {
             Text("SHOW EVIDENCE", color = Noir.Lamp, fontFamily = Noir.Typewriter, fontSize = 12.sp, letterSpacing = 2.sp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 file.statements.forEachIndexed { i, st ->
-                    val have = i in vm.board.solvedOrder
+                    val have = i in vm.wall.solved
                     val used = i in room.shown[current]
                     Text(
                         if (have) st.label else "🔒 Missing evidence",

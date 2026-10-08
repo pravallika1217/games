@@ -4,9 +4,11 @@
 
 1. 🪪 **Your ID card.** Pick your name once; everyone in the game calls you "Inspector ___".
 2. 📞 **The midnight call.** The Commissioner phones with today's case, typed out letter by letter.
-3. 🔦 **Search the crime scene.** The room is dark. Drag your torch to find 3 pieces of evidence.
-4. 📌 **The evidence wall.** 12 notes pinned on cork. Tap 4 that belong together and red string ties them
-   (like *Connections*). Each group unlocks a witness statement. Constable Pandu gives hints.
+3. 🔦 **Search the crime scene.** The room is dark. Drag your finger to move the torch. When a clue
+   sparkles ✨ in the light, tap it to pick it up and put it in your evidence bag.
+4. 📌 **The evidence wall.** Witnesses come one at a time and say exactly what to find, e.g.
+   *"Find the 4 SWEETS on the wall."* Tap the right notes to pin them with red string; wrong notes
+   cost Pandu's chai ☕. Then the witness gives their statement. Constable Pandu gives hints.
 5. 💡 **The interrogation room.** Call in each suspect, show them statements, and watch them react.
    Innocent people relax 😌. The liar starts sweating 💦. Your notebook fills itself in.
 6. 🚔 **The arrest.** Handcuffs, a CASE CLOSED stamp, and the culprit's confession with a twist.
@@ -42,7 +44,7 @@ app/      Android app, Jetpack Compose UI
 
 ## Scoring
 
-Start at 100. Each snapped string costs 5, each missed statement 10, each hint 5, and each wrong
+Start at 100. Each wrong note costs 5, each missed statement 10, each hint 5, and each wrong
 arrest 25. If the culprit escapes, the score can't go above 30.
 90+ is ★★★ Sherlock, 70+ ★★ Sharp Inspector, 45+ ★ Constable on Duty.
 
@@ -52,7 +54,8 @@ Add a `CaseFile` to `CaseLibrary.cases`:
 
 - a title, the Commissioner's call (`{name}` becomes the detective's name) and a one-line crime,
 - a crime scene: 3 pieces of evidence (emoji, position, what it means) and some background objects,
-- 3 word groups for the wall, each with the witness statement it unlocks and Pandu's hint,
+- 3 word groups for the wall, each with its witness: what they ask you to find (give an example that
+  isn't on the wall) and the statement they give. Plus 4 trick notes that fit no witness,
 - 3 suspects with an alibi and a few small-talk lines; vary which chair the culprit sits in,
 - reactions: one statement that makes each innocent relax, and one that makes the culprit sweat,
 - what the Commissioner says when an innocent is arrested,

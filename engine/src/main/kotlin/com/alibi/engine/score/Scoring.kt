@@ -1,21 +1,21 @@
 package com.alibi.engine.score
 
-import com.alibi.engine.board.BoardState
+import com.alibi.engine.board.WallState
 import com.alibi.engine.cases.Interrogation
 
 /** How well today's case went. */
 data class Verdict(val points: Int, val stars: Int, val title: String)
 
 /**
- * Start at 100. Each snapped string costs 5, each missed statement 10, each hint 5,
+ * Start at 100. Each wrong note costs 5, each missed statement 10, each hint 5,
  * each wrong arrest 25. If the culprit escapes, the score can't go above 30.
  */
 object Scoring {
-    fun verdict(board: BoardState, hintsUsed: Int, room: Interrogation): Verdict {
+    fun verdict(wall: WallState, room: Interrogation): Verdict {
         var points = 100 -
-            board.mistakes * 5 -
-            (board.groups.size - board.solvedOrder.size) * 10 -
-            hintsUsed * 5 -
+            wall.mistakes * 5 -
+            (wall.groups.size - wall.solved.size) * 10 -
+            wall.hintsUsed * 5 -
             room.released.size * 25
         if (!room.caught) points = minOf(points, 30)
         points = points.coerceIn(0, 100)

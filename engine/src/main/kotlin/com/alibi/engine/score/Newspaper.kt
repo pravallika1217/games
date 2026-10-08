@@ -1,6 +1,6 @@
 package com.alibi.engine.score
 
-import com.alibi.engine.board.BoardState
+import com.alibi.engine.board.WallState
 import com.alibi.engine.cases.CaseFile
 import com.alibi.engine.cases.Interrogation
 
@@ -20,15 +20,14 @@ object Newspaper {
         file: CaseFile,
         detective: String,
         minutes: Int,
-        board: BoardState,
-        hintsUsed: Int,
+        wall: WallState,
         room: Interrogation,
     ): FrontPage {
-        val verdict = Scoring.verdict(board, hintsUsed, room)
+        val verdict = Scoring.verdict(wall, room)
         val culprit = file.suspects[file.culprit]
         val mins = minutes.coerceAtLeast(1)
         val minWord = if (mins == 1) "minute" else "minutes"
-        val found = board.solvedOrder.size
+        val found = wall.solved.size
         return if (room.caught) {
             FrontPage(
                 headline = "Inspector $detective cracks ${file.headlineSubject} in $mins $minWord!",
@@ -37,12 +36,12 @@ object Newspaper {
                 caption = "${culprit.name} being taken away by police.",
                 columns = listOf(
                     "${file.crime} Inspector $detective arrived at midnight and searched the scene with only a torch.",
-                    "$found of ${board.groups.size} witness statements were connected on the evidence wall. " +
+                    "$found of ${wall.groups.size} witness statements were connected on the evidence wall. " +
                         (if (room.released.isEmpty()) "The" else "After a wrong arrest, the") +
                         " Inspector caught ${culprit.name}, whose alibi fell apart under the interrogation lamp.",
                 ),
                 verdict = verdict,
-                shareText = shareText(file, detective, mins, board, room, verdict),
+                shareText = shareText(file, detective, mins, wall, room, verdict),
             )
         } else {
             FrontPage(
@@ -56,7 +55,7 @@ object Newspaper {
                         "\"Tomorrow is a new case,\" the Inspector told reporters.",
                 ),
                 verdict = verdict,
-                shareText = shareText(file, detective, mins, board, room, verdict),
+                shareText = shareText(file, detective, mins, wall, room, verdict),
             )
         }
     }
@@ -66,7 +65,7 @@ object Newspaper {
         file: CaseFile,
         detective: String,
         minutes: Int,
-        board: BoardState,
+        wall: WallState,
         room: Interrogation,
         verdict: Verdict,
     ): String {
@@ -79,7 +78,7 @@ object Newspaper {
             "📰 THE DAILY DETECTIVE",
             if (room.caught) "Inspector $detective cracked \"${file.title}\" in $minutes min! ${"⭐".repeat(verdict.stars)}"
             else "The culprit escaped Inspector $detective in \"${file.title}\" 😱",
-            "🧶 Evidence ${board.solvedOrder.size}/${board.groups.size} · ☕ Mistakes ${board.mistakes} · 🚔 $arrest",
+            "🧶 Evidence ${wall.solved.size}/${wall.groups.size} · ☕ Mistakes ${wall.mistakes} · 🚔 $arrest",
             "Can you crack today's case? 🕵️ #ALIBI",
         ).joinToString("\n")
     }

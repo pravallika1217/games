@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.alibi.engine.board.BoardState
-import com.alibi.engine.board.GuessResult
+import com.alibi.engine.board.TapResult
+import com.alibi.engine.board.WallState
 import com.alibi.engine.cases.CaseFile
 import com.alibi.engine.cases.CaseLibrary
 import com.alibi.engine.cases.Interrogation
@@ -18,7 +18,6 @@ import com.alibi.engine.score.CareerRank
 import com.alibi.engine.score.FrontPage
 import com.alibi.engine.score.Newspaper
 import java.time.LocalDate
-import kotlin.math.hypot
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,31 +50,28 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     // ---- Crime scene ----
     var found by mutableStateOf(List(3) { false })
         private set
-    var sceneMessage by mutableStateOf<String?>(null)
+    /** The clue the detective just picked up, shown on a card before it goes in the bag. */
+    var inspecting by mutableStateOf<Int?>(null)
         private set
     val allFound: Boolean get() = found.all { it }
 
     // ---- Evidence wall ----
-    var board by mutableStateOf(BoardState.start(file.groups))
-        private set
-    var selection by mutableStateOf<List<String>>(emptyList())
-        private set
-    var hintsUsed by mutableIntStateOf(0)
+    var wall by mutableStateOf(WallState.start(file.groups, file.decoys))
         private set
     var panduLine by mutableStateOf("")
         private set
     /** Notes flying into the evidence envelope. */
     var filing by mutableStateOf<Set<String>>(emptySet())
         private set
-    /** Bumps every time the string snaps, to restart the shake. */
-    var snapTick by mutableIntStateOf(0)
+    /** The wrong note that is shaking, and a counter that restarts the shake. */
+    var shakeWord by mutableStateOf<String?>(null)
         private set
-    var snapping by mutableStateOf(false)
+    var shakeTick by mutableIntStateOf(0)
         private set
     /** The statement just unlocked, shown as a pop-up. */
     var newStatement by mutableStateOf<Int?>(null)
         private set
-    private var checking = false
+    private var filingNow = false
 
     // ---- Interrogation ----
     var room by mutableStateOf(Interrogation.start(file))
@@ -116,12 +112,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     /** Starts today's case, or a practice replay if it's already finished. */
     fun takeTheCall() {
         found = List(3) { false }
-        sceneMessage = null
-        board = BoardState.start(file.groups)
-        selection = emptyList()
-        hintsUsed = 0
+        inspecting = null
+        wall = WallState.start(file.groups, file.decoys)
         filing = emptySet()
-        snapping = false
+        shakeWord = null
         newStatement = null
         room = Interrogation.start(file)
         current = 0
@@ -153,87 +147,75 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // ---- Crime scene ----
 
-    /** Called as the torch moves. Evidence within [reachPx] of the torch's centre gets bagged. */
-    fun torchAt(xPx: Float, yPx: Float, widthPx: Float, heightPx: Float, reachPx: Float) {
-        file.scene.evidence.forEachIndexed { i, item ->
-            if (found[i]) return@forEachIndexed
-            if (hypot(item.x * widthPx - xPx, item.y * heightPx - yPx) < reachPx) {
-                found = found.mapIndexed { j, f -> f || j == i }
-                sceneMessage = "${item.emoji} ${item.text}"
-                sfx.found()
-            }
-        }
+    /** The detective taps a clue they can see in the torchlight. */
+    fun pickUp(index: Int) {
+        if (found[index] || inspecting != null) return
+        inspecting = index
+        sfx.found()
+    }
+
+    fun putInBag() {
+        val i = inspecting ?: return
+        found = found.mapIndexed { j, f -> f || j == i }
+        inspecting = null
+        sfx.pin()
     }
 
     fun backToStation() {
         sfx.siren()
-        panduLine = "Inspector $name, I pinned everything we found. Tap 4 notes that belong together and I'll tie them with string!"
+        panduLine = "Inspector $name, the witnesses are here. Each one will tell you what to find on the wall."
         screen = Screen.Wall
     }
 
     // ---- Evidence wall ----
 
-    fun toggleNote(word: String) {
-        if (checking || board.isOver) return
-        selection = when {
-            word in selection -> selection - word
-            selection.size < 4 -> selection + word
-            else -> selection
-        }
-        sfx.pin()
-        if (selection.size == 4) {
-            checking = true
-            viewModelScope.launch {
-                delay(650)
-                checkSelection()
-                checking = false
-            }
-        }
-    }
-
-    private suspend fun checkSelection() {
-        val (next, result) = board.submit(selection.toSet())
+    fun tapNote(word: String) {
+        if (filingNow || newStatement != null) return
+        val (next, result) = wall.tap(word)
         when (result) {
-            is GuessResult.Correct -> {
+            TapResult.Pinned -> {
+                wall = next
+                sfx.pin()
+                val left = 4 - next.picked.size
+                panduLine = "Yes! That's one. $left more to go."
+            }
+            is TapResult.TaskDone -> {
                 sfx.success()
-                filing = selection.toSet()
-                delay(600)
-                board = next
-                selection = emptyList()
-                filing = emptySet()
-                panduLine = if (next.isWon) "All evidence connected! Inspector, let's go meet the suspects." else "Shabash, Inspector! That's a match. Keep going!"
-                newStatement = result.groupIndex
-            }
-            GuessResult.AlreadyTried -> {
-                panduLine = "Inspector, we already tried those four together. 🤔"
-                selection = emptyList()
-            }
-            GuessResult.OneAway, GuessResult.Wrong -> {
-                sfx.snap()
-                snapping = true
-                snapTick++
-                delay(520)
-                board = next
-                selection = emptyList()
-                snapping = false
-                panduLine = when {
-                    next.isLost -> "Inspector, my chai is finished and so is my patience! 😅 Let's take what we have to the interrogation room."
-                    result == GuessResult.OneAway -> "So close, Inspector! 3 of those 4 feel right. 🤏"
-                    else -> "The string snapped! Those don't belong together."
+                filingNow = true
+                wall = wall.copy(picked = wall.picked + word)
+                filing = wall.picked.toSet()
+                viewModelScope.launch {
+                    delay(700)
+                    wall = next
+                    filing = emptySet()
+                    filingNow = false
+                    newStatement = result.groupIndex
+                    panduLine = if (next.isOver) "All witnesses have talked! Inspector, let's go meet the suspects."
+                    else "Shabash, Inspector! The next witness is waiting."
                 }
             }
-            GuessResult.NotFour, GuessResult.GameOver -> selection = emptyList()
+            TapResult.Wrong -> {
+                wall = next
+                sfx.snap()
+                shakeWord = word
+                shakeTick++
+                panduLine = "Not that one, Inspector! ${word.uppercase()} doesn't fit. That cost me a cup of chai ☕"
+            }
+            TapResult.OutOfPatience -> {
+                wall = next
+                sfx.snap()
+                shakeWord = word
+                shakeTick++
+                panduLine = "Inspector, my chai is finished and so is my patience! 😅 Let's take what we have to the interrogation room."
+            }
+            TapResult.Ignored -> Unit
         }
-    }
-
-    fun untie() {
-        if (!checking) selection = emptyList()
     }
 
     fun askPandu() {
-        val open = file.groups.indices.firstOrNull { it !in board.solvedOrder } ?: return
-        hintsUsed++
-        panduLine = "${file.statements[open].hint} (hint used: −5 points)"
+        val next = wall.hint() ?: return
+        wall = next
+        panduLine = "Psst… look at the glowing note 👀 (hint: −5 points)"
     }
 
     fun dismissStatement() {
@@ -291,7 +273,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun finishCase() {
         val minutes = ((System.currentTimeMillis() - startedAt) / 60_000L).toInt()
-        val front = Newspaper.write(file, name, minutes, board, hintsUsed, room)
+        val front = Newspaper.write(file, name, minutes, wall, room)
         page = front
         val before = careerRank
         val firstFinish = todaysPage == null

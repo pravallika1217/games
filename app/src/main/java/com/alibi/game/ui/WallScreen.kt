@@ -1,7 +1,11 @@
 package com.alibi.game.ui
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -34,7 +38,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -51,42 +54,53 @@ import com.alibi.game.GameViewModel
 
 private val NOTE_COLORS = listOf(Noir.Paper, Noir.Sticky, Noir.Memo)
 
-/** The evidence wall: pinned notes on cork, tied together with red string. */
+/**
+ * The evidence wall. Witnesses come one at a time and say exactly what to find
+ * ("Find the 4 SWEETS"). Tap the right notes on the cork to pin them with red string.
+ */
 @Composable
 fun WallScreen(vm: GameViewModel) {
-    val board = vm.board
+    val wall = vm.wall
     val file = vm.file
     Page {
-        SceneTitle("Police station · Evidence wall", "Connect the evidence", "Tap 4 notes that belong together. Pandu will tie them with red string.")
+        SceneTitle("Police station · Evidence wall", "The witnesses are here")
+
+        val task = wall.current
+        if (task != null) {
+            WitnessCard(
+                witness = file.statements[wall.task].witness,
+                ask = file.statements[wall.task].ask,
+                found = wall.picked.size,
+                number = wall.task + 1,
+                total = wall.groups.size,
+            )
+        }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Pandu's patience", color = Noir.Muted, fontSize = 14.sp)
+            Text("Wrong notes cost Pandu's chai", color = Noir.Muted, fontSize = 13.sp)
             Row {
-                repeat(board.maxMistakes) { i ->
-                    Text("☕", fontSize = 20.sp, modifier = Modifier.graphicsLayer { alpha = if (i < board.mistakes) 0.18f else 1f })
+                repeat(wall.maxMistakes) { i ->
+                    Text("☕", fontSize = 20.sp, modifier = Modifier.graphicsLayer { alpha = if (i < wall.mistakes) 0.18f else 1f })
                 }
             }
         }
 
-        Corkboard(vm)
+        if (!wall.isOver || vm.filing.isNotEmpty()) Corkboard(vm)
 
-        // Envelopes for connected evidence, and the ones that were missed.
+        // Statements collected so far, and the ones that were missed.
         file.groups.indices.forEach { gi ->
-            when {
-                gi in board.solvedOrder -> Envelope("EVIDENCE FILE", file.statements[gi].label, missed = false)
-                board.isOver -> Envelope("MISSED", "${file.groups[gi].title}: ${file.groups[gi].items.joinToString(", ")}", missed = true)
+            when (gi) {
+                in wall.solved -> Envelope("STATEMENT", "${file.statements[gi].label}: ${file.statements[gi].text}", missed = false)
+                in wall.missed -> Envelope("MISSED", "${file.statements[gi].witness} left without talking.", missed = true)
             }
         }
 
         PanduSays(vm.panduLine)
 
-        if (board.isOver) {
+        if (wall.isOver && vm.filing.isEmpty()) {
             LampButton("To the interrogation room 💡", onClick = vm::toInterrogation)
         } else {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                GhostButton("Ask Pandu for a hint", onClick = vm::askPandu, modifier = Modifier.weight(1f))
-                GhostButton("Untie string", onClick = vm::untie, modifier = Modifier.weight(1f))
-            }
+            GhostButton("👮 Ask Pandu for a hint", onClick = vm::askPandu, modifier = Modifier.fillMaxWidth())
         }
     }
 
@@ -101,29 +115,61 @@ fun WallScreen(vm: GameViewModel) {
                     .padding(22.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text("NEW EVIDENCE", color = Noir.String, fontFamily = Noir.Typewriter, fontSize = 12.sp, letterSpacing = 3.sp)
-                Text("${file.groups[gi].title} → ${st.label}", color = Noir.PaperInk, fontFamily = Noir.Typewriter, fontSize = 20.sp, lineHeight = 26.sp)
-                Text(st.text, color = Noir.PaperInk, fontSize = 16.sp, lineHeight = 24.sp)
+                Text("NEW STATEMENT", color = Noir.String, fontFamily = Noir.Typewriter, fontSize = 12.sp, letterSpacing = 3.sp)
+                Text(st.witness, color = Noir.PaperInk, fontFamily = Noir.Typewriter, fontSize = 20.sp, lineHeight = 26.sp)
+                Text(st.text, color = Noir.PaperInk, fontSize = 17.sp, lineHeight = 25.sp)
+                Text("Show this to the suspects in the interrogation room.", color = Noir.PaperInk.copy(alpha = 0.6f), fontSize = 13.sp)
                 LampButton("Pin it to the file", onClick = vm::dismissStatement, color = Noir.PaperInk)
             }
         }
     }
 }
 
+/** The witness who is talking now, what they want you to find, and how many you've found. */
+@Composable
+private fun WitnessCard(witness: String, ask: String, found: Int, number: Int, total: Int) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Noir.Night2)
+            .border(1.dp, Noir.Lamp, RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text("WITNESS $number OF $total", color = Noir.Lamp, fontFamily = Noir.Typewriter, fontSize = 12.sp, letterSpacing = 2.sp)
+        Text(witness, color = Noir.Fg, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+        Text("\"$ask\"", color = Noir.Fg, fontSize = 16.sp, lineHeight = 23.sp)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            repeat(4) { i ->
+                Box(
+                    Modifier
+                        .size(14.dp)
+                        .clip(CircleShape)
+                        .background(if (i < found) Noir.String else Noir.Night3)
+                )
+            }
+            Text("Found $found / 4", color = Noir.Muted, fontSize = 14.sp, modifier = Modifier.padding(start = 4.dp))
+        }
+    }
+}
+
 @Composable
 private fun Corkboard(vm: GameViewModel) {
-    val board = vm.board
+    val wall = vm.wall
     val density = LocalDensity.current
     val pins = remember { mutableStateMapOf<String, Offset>() }
     var wallOrigin by remember { mutableStateOf(Offset.Zero) }
     // Each note keeps its own tilt and paper for the whole case.
-    val looks = remember(board.groups) {
-        board.groups.flatMap { it.items }.mapIndexed { i, w -> w to (((i * 37) % 9) - 4f to NOTE_COLORS[(i * 5) % 3]) }.toMap()
+    val looks = remember(wall.groups) {
+        wall.tiles.sorted().mapIndexed { i, w -> w to (((i * 37) % 9) - 4f to NOTE_COLORS[(i * 5) % 3]) }.toMap()
     }
     val shake = remember { Animatable(0f) }
-    LaunchedEffect(vm.snapTick) {
-        if (vm.snapTick > 0) for (x in listOf(-6f, 6f, -4f, 3f, 0f)) shake.animateTo(x, tween(60))
+    LaunchedEffect(vm.shakeTick) {
+        if (vm.shakeTick > 0) for (x in listOf(-7f, 7f, -5f, 4f, 0f)) shake.animateTo(x, tween(60))
     }
+    val pulse = rememberInfiniteTransition(label = "hint")
+    val glow by pulse.animateFloat(0.3f, 1f, infiniteRepeatable(tween(600), RepeatMode.Reverse), label = "glow")
 
     Box(
         Modifier
@@ -139,34 +185,35 @@ private fun Corkboard(vm: GameViewModel) {
             .onGloballyPositioned { wallOrigin = it.positionInRoot() }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            board.tiles.chunked(3).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            wall.tiles.chunked(4).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { word ->
                         val (tilt, paper) = looks.getValue(word)
                         Note(
                             word = word,
                             tilt = tilt,
                             paper = paper,
-                            selected = word in vm.selection,
+                            pinned = word in wall.picked,
                             filing = word in vm.filing,
-                            shakeX = if (vm.snapping && word in vm.selection) shake.value else 0f,
-                            enabled = !board.isOver,
+                            wrong = word in wall.shaken,
+                            glow = if (word in wall.hinted && word !in wall.picked) glow else 0f,
+                            shakeX = if (word == vm.shakeWord) shake.value else 0f,
                             modifier = Modifier.weight(1f),
                             onPositioned = { c ->
                                 val p = c.positionInRoot()
                                 pins[word] = Offset(p.x + c.size.width / 2f, p.y + with(density) { 12.dp.toPx() })
                             },
-                            onClick = { vm.toggleNote(word) },
+                            onClick = { vm.tapNote(word) },
                         )
                     }
-                    repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
+                    repeat(4 - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
         }
 
-        // The red string, drawn from pin to pin in the order the notes were picked.
+        // Red string from pin to pin, in the order the notes were found.
         Canvas(Modifier.matchParentSize()) {
-            val points = vm.selection.mapNotNull { pins[it] }.map { it - wallOrigin }
+            val points = wall.picked.mapNotNull { pins[it] }.map { it - wallOrigin }
             if (points.size < 2) return@Canvas
             val path = Path().apply {
                 moveTo(points[0].x, points[0].y)
@@ -176,15 +223,7 @@ private fun Corkboard(vm: GameViewModel) {
                     quadraticTo((a.x + b.x) / 2, (a.y + b.y) / 2 + 22.dp.toPx(), b.x, b.y)
                 }
             }
-            drawPath(
-                path,
-                color = Noir.String.copy(alpha = if (vm.snapping) 0.5f else 1f),
-                style = Stroke(
-                    width = 2.5.dp.toPx(),
-                    cap = StrokeCap.Round,
-                    pathEffect = if (vm.snapping) PathEffect.dashPathEffect(floatArrayOf(6f, 14f)) else null,
-                ),
-            )
+            drawPath(path, color = Noir.String, style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round))
         }
     }
 }
@@ -194,16 +233,17 @@ private fun Note(
     word: String,
     tilt: Float,
     paper: Color,
-    selected: Boolean,
+    pinned: Boolean,
     filing: Boolean,
+    wrong: Boolean,
+    glow: Float,
     shakeX: Float,
-    enabled: Boolean,
     modifier: Modifier,
     onPositioned: (LayoutCoordinates) -> Unit,
     onClick: () -> Unit,
 ) {
-    val lift by animateFloatAsState(if (selected) 1f else 0f, tween(180), label = "lift")
-    val gone by animateFloatAsState(if (filing) 1f else 0f, tween(550), label = "file")
+    val lift by animateFloatAsState(if (pinned) 1f else 0f, tween(180), label = "lift")
+    val gone by animateFloatAsState(if (filing) 1f else 0f, tween(650), label = "file")
     Box(
         modifier
             .onGloballyPositioned(onPositioned)
@@ -214,13 +254,14 @@ private fun Note(
                 val s = (1f + 0.05f * lift) * (1f - 0.8f * gone)
                 scaleX = s
                 scaleY = s
-                alpha = 1f - gone
+                alpha = (1f - gone) * if (wrong) 0.45f else 1f
             }
             .shadow((4 + 8 * lift).dp, RoundedCornerShape(2.dp))
             .background(paper, RoundedCornerShape(2.dp))
-            .clickable(enabled = enabled, onClick = onClick)
+            .border(3.dp, Noir.Lamp.copy(alpha = glow), RoundedCornerShape(2.dp))
+            .clickable(onClick = onClick)
             .heightIn(min = 62.dp)
-            .padding(start = 4.dp, end = 4.dp, top = 18.dp, bottom = 10.dp),
+            .padding(start = 2.dp, end = 2.dp, top = 18.dp, bottom = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
         Box(
@@ -229,16 +270,17 @@ private fun Note(
                 .graphicsLayer { translationY = -12f * density }
                 .size(12.dp)
                 .clip(CircleShape)
-                .background(Brush.radialGradient(if (selected) listOf(Color(0xFFFF8A80), Noir.String) else listOf(Color(0xFFDDDDDD), Color(0xFF777777))))
+                .background(Brush.radialGradient(if (pinned) listOf(Color(0xFFFF8A80), Noir.String) else listOf(Color(0xFFDDDDDD), Color(0xFF777777))))
         )
         Text(
             word.uppercase(),
             color = Noir.PaperInk,
             fontFamily = Noir.Typewriter,
-            fontSize = if (word.length > 8) 12.sp else 14.sp,
+            fontSize = if (word.length > 7) 11.sp else 13.sp,
             textAlign = TextAlign.Center,
             lineHeight = 16.sp,
         )
+        if (wrong) Text("✗", color = Noir.String, fontSize = 22.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.BottomEnd))
     }
 }
 
@@ -253,6 +295,6 @@ private fun Envelope(top: String, text: String, missed: Boolean) {
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Text(top, color = if (missed) Noir.Muted else Noir.PaperInk.copy(alpha = 0.7f), fontFamily = Noir.Typewriter, fontSize = 11.sp, letterSpacing = 2.sp)
-        Text(text, color = if (missed) Noir.Muted else Noir.PaperInk, fontFamily = Noir.Typewriter, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(text, color = if (missed) Noir.Muted else Noir.PaperInk, fontSize = 14.sp, lineHeight = 20.sp)
     }
 }
