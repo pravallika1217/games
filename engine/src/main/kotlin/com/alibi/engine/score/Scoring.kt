@@ -1,30 +1,60 @@
 package com.alibi.engine.score
 
-import com.alibi.engine.board.WallState
-import com.alibi.engine.cases.Interrogation
+import com.alibi.engine.cases.ArrestState
+import com.alibi.engine.cases.CaseFile
+import com.alibi.engine.cases.SearchState
 
-/** How well today's case went. */
-data class Verdict(val points: Int, val stars: Int, val title: String)
+/** Today's result, like Wordle's: stars, time, mistakes and a spoiler-free share text. */
+data class ResultCard(
+    val stars: Int,
+    val title: String,
+    val seconds: Int,
+    val mistakes: Int,
+    val caught: Boolean,
+    val shareText: String,
+) {
+    val time: String get() = "${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}"
+}
 
 /**
- * Start at 100. Each wrong note costs 5, each missed statement 10, each hint 5,
- * each wrong arrest 25. If the culprit escapes, the score can't go above 30.
+ * Three stars to start. Lose one for 4 or more mistakes (a hint counts as 2),
+ * and one for a wrong arrest. If the culprit escapes, no stars.
  */
 object Scoring {
-    fun verdict(wall: WallState, room: Interrogation): Verdict {
-        var points = 100 -
-            wall.mistakes * 5 -
-            (wall.groups.size - wall.solved.size) * 10 -
-            wall.hintsUsed * 5 -
-            room.released.size * 25
-        if (!room.caught) points = minOf(points, 30)
-        points = points.coerceIn(0, 100)
-        return when {
-            points >= 90 -> Verdict(points, 3, "Sherlock")
-            points >= 70 -> Verdict(points, 2, "Sharp Inspector")
-            points >= 45 -> Verdict(points, 1, "Constable on Duty")
-            else -> Verdict(points, 0, "Desk Duty")
+    fun mistakes(examMistakes: Int, search: SearchState): Int =
+        examMistakes + search.wrongSearches + search.wrongAnswers
+
+    fun result(
+        caseNumber: Int,
+        file: CaseFile,
+        seconds: Int,
+        examMistakes: Int,
+        search: SearchState,
+        arrest: ArrestState,
+    ): ResultCard {
+        val mistakes = mistakes(examMistakes, search)
+        val stars = when {
+            !arrest.caught -> 0
+            else -> 3 - (if (mistakes + search.hintsUsed * 2 >= 4) 1 else 0) - (if (arrest.released.isNotEmpty()) 1 else 0)
         }
+        val title = when {
+            !arrest.caught -> "The culprit got away"
+            stars == 3 -> "Sherlock"
+            stars == 2 -> "Sharp Inspector"
+            else -> "Constable on Duty"
+        }
+        val card = ResultCard(stars, title, seconds.coerceAtLeast(1), mistakes, arrest.caught, "")
+        val tries = when {
+            !arrest.caught -> "got away"
+            arrest.released.isEmpty() -> "1st try"
+            else -> "2nd try"
+        }
+        val share = listOf(
+            "ALIBI #$caseNumber 🕵️ ${"⭐".repeat(stars)}${"▫️".repeat(3 - stars)}",
+            "⏱ ${card.time} · ❌ $mistakes · 🚔 $tries",
+            "Can you crack \"${file.title}\"?",
+        ).joinToString("\n")
+        return card.copy(shareText = share)
     }
 }
 

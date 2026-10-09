@@ -6,51 +6,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 
-/** Detective noir: a dark night, amber lamp light, paper, cork and red string. */
+/** Night-time detective palette: dark room, lamp amber, case-file paper, red string. */
 object Noir {
-    val Night = Color(0xFF0D0F13)
-    val Night2 = Color(0xFF161A20)
-    val Night3 = Color(0xFF222832)
-    val Lamp = Color(0xFFF0B44C)
-    val LampSoft = Color(0x29F0B44C)
-    val Paper = Color(0xFFF2E9D4)
-    val PaperInk = Color(0xFF2A241C)
-    val Sticky = Color(0xFFF6DD7A)
-    val Memo = Color(0xFFDFE7EF)
-    val Cork = Color(0xFFA87A4F)
-    val CorkFrame = Color(0xFF4A3523)
-    val Envelope = Color(0xFFD9C39A)
+    val Bg = Color(0xFF101318)
+    val Panel = Color(0xFF191D24)
+    val Panel2 = Color(0xFF232934)
+    val Line = Color(0xFF2D3440)
+    val Text = Color(0xFFF1ECE2)
+    val Dim = Color(0xFF9A958B)
+    val Amber = Color(0xFFF3B544)
+    val AmberDark = Color(0xFFB8852A)
+    val AmberInk = Color(0xFF1D1505)
+    val Green = Color(0xFF58C27D)
+    val GreenDark = Color(0xFF368A55)
+    val GreenBg = Color(0xFF183224)
+    val Red = Color(0xFFEC5B52)
+    val RedDark = Color(0xFFA23A33)
+    val RedBg = Color(0xFF3A1A1A)
+    val Paper = Color(0xFFF3EAD6)
+    val PaperEdge = Color(0xFFB9AD93)
+    val Ink = Color(0xFF2A241C)
     val String = Color(0xFFC8322B)
-    val Fg = Color(0xFFEBE5D8)
-    val Muted = Color(0xFF958F84)
-    val Good = Color(0xFF7CC48A)
-    val Bad = Color(0xFFE2594F)
-    val NotebookPaper = Color(0xFFF7F1DF)
-    val NotebookInk = Color(0xFF2B3A67)
-    val Newsprint = Color(0xFFEFE6CF)
-    val NewsInk = Color(0xFF1C1813)
+    val Tape = Color(0xFFF3C623)
 
-    /** Typed police documents, notes and the confession. */
+    /** Typed case notes. */
     val Typewriter = FontFamily.Monospace
-    /** The detective's notebook. */
-    val Handwriting = FontFamily.Cursive
-    /** The newspaper. */
-    val News = FontFamily.Serif
 }
 
 @Composable
 fun AlibiTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = darkColorScheme(
-            primary = Noir.Lamp,
-            onPrimary = Color(0xFF1A1408),
-            background = Noir.Night,
-            onBackground = Noir.Fg,
-            surface = Noir.Night2,
-            onSurface = Noir.Fg,
-            surfaceVariant = Noir.Night3,
-            onSurfaceVariant = Noir.Muted,
-            error = Noir.Bad,
+            primary = Noir.Amber,
+            onPrimary = Noir.AmberInk,
+            background = Noir.Bg,
+            onBackground = Noir.Text,
+            surface = Noir.Panel,
+            onSurface = Noir.Text,
+            surfaceVariant = Noir.Panel2,
+            onSurfaceVariant = Noir.Dim,
+            error = Noir.Red,
         ),
         content = content,
     )

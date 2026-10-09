@@ -6,22 +6,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import com.alibi.engine.board.TapResult
-import com.alibi.engine.board.WallState
+import com.alibi.engine.cases.ArrestState
 import com.alibi.engine.cases.CaseFile
 import com.alibi.engine.cases.CaseLibrary
-import com.alibi.engine.cases.Interrogation
-import com.alibi.engine.cases.Mood
 import com.alibi.engine.cases.PlayableCase
+import com.alibi.engine.cases.Questioning
+import com.alibi.engine.cases.Reply
+import com.alibi.engine.cases.SearchResult
+import com.alibi.engine.cases.SearchState
 import com.alibi.engine.score.CareerRank
-import com.alibi.engine.score.FrontPage
-import com.alibi.engine.score.Newspaper
+import com.alibi.engine.score.ResultCard
+import com.alibi.engine.score.Scoring
 import java.time.LocalDate
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-enum class Screen { Id, Desk, Call, Scene, Wall, Room, Arrest, News }
+enum class Screen { Name, Home, Call, Arrival, Examine, Search, Questioning, Vote, Reveal, Result }
+
+/** Right / wrong answer bar at the bottom of the screen, like Duolingo. */
+enum class Feedback { RIGHT, WRONG }
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val store = ProgressStore(application)
@@ -33,7 +34,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     var name by mutableStateOf(store.name)
         private set
-    var screen by mutableStateOf(if (store.name.isBlank()) Screen.Id else Screen.Desk)
+    var screen by mutableStateOf(if (store.name.isBlank()) Screen.Name else Screen.Home)
         private set
     var soundOn by mutableStateOf(store.soundOn)
         private set
@@ -41,55 +42,63 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private set
     var streak by mutableIntStateOf(store.streak(today))
         private set
-    /** Today's newspaper, once the case is finished. */
-    var todaysPage by mutableStateOf(store.pageFor(today))
+    /** Today's result, once the case is finished. */
+    var todaysResult by mutableStateOf(store.resultFor(today))
         private set
-
     val careerRank: CareerRank get() = CareerRank.forSolved(solvedCount)
 
-    // ---- Crime scene ----
-    var found by mutableStateOf(List(3) { false })
+    // ---- Examination ----
+    var seenSpots by mutableStateOf<Set<Int>>(emptySet())
         private set
-    /** The clue the detective just picked up, shown on a card before it goes in the bag. */
-    var inspecting by mutableStateOf<Int?>(null)
+    var examPick by mutableStateOf<Int?>(null)
         private set
-    val allFound: Boolean get() = found.all { it }
+    var examRuledOut by mutableStateOf<Set<Int>>(emptySet())
+        private set
+    var examFeedback by mutableStateOf<Feedback?>(null)
+        private set
+    private var examMistakes = 0
 
-    // ---- Evidence wall ----
-    var wall by mutableStateOf(WallState.start(file.groups, file.decoys))
+    // ---- Search ----
+    var search by mutableStateOf(SearchState(file))
         private set
-    var panduLine by mutableStateOf("")
+    /** What the last search found, shown above the room. */
+    var searchMessage by mutableStateOf<String?>(null)
         private set
-    /** Notes flying into the evidence envelope. */
-    var filing by mutableStateOf<Set<String>>(emptySet())
+    var searchMessageTick by mutableIntStateOf(0)
         private set
-    /** The wrong note that is shaking, and a counter that restarts the shake. */
-    var shakeWord by mutableStateOf<String?>(null)
+    /** The place Pandu points at after a hint. */
+    var hinted by mutableStateOf<String?>(null)
         private set
-    var shakeTick by mutableIntStateOf(0)
+    /** The clue card open right now ("CLUE FOUND… who does this point to?"). */
+    var openClue by mutableStateOf<Int?>(null)
         private set
-    /** The statement just unlocked, shown as a pop-up. */
-    var newStatement by mutableStateOf<Int?>(null)
+    var clueRuledOut by mutableStateOf<Set<Int>>(emptySet())
         private set
-    private var filingNow = false
-
-    // ---- Interrogation ----
-    var room by mutableStateOf(Interrogation.start(file))
+    var clueSolved by mutableStateOf(false)
         private set
-    var current by mutableIntStateOf(0)
-        private set
-    /** The suspect who is "typing" an answer right now. */
-    var typing by mutableStateOf<Int?>(null)
-        private set
-    var arrestArmed by mutableStateOf(false)
-        private set
-    var commissionerSays by mutableStateOf<String?>(null)
+    /** Suspects who just got a new red string, to make their card glow. */
+    var newString by mutableStateOf<Int?>(null)
         private set
 
-    // ---- The end ----
-    var page by mutableStateOf<FrontPage?>(null)
+    // ---- Questioning ----
+    var questioning by mutableStateOf(Questioning(file))
         private set
-    var promotedTo by mutableStateOf<CareerRank?>(null)
+    var selected by mutableStateOf<Int?>(null)
+        private set
+    var lastReply by mutableStateOf<Reply?>(null)
+        private set
+    /** Bumps on every caught lie, to show the GOTCHA! stamp. */
+    var gotchaTick by mutableIntStateOf(0)
+        private set
+
+    // ---- Arrest ----
+    var arrest by mutableStateOf(ArrestState(file))
+        private set
+    var votePick by mutableStateOf<Int?>(null)
+        private set
+    var lastArrested by mutableStateOf<Int?>(null)
+        private set
+    var result by mutableStateOf<ResultCard?>(null)
         private set
     private var startedAt = 0L
 
@@ -99,198 +108,207 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         store.soundOn = soundOn
     }
 
-    // ---- ID card and desk ----
+    // ---- Name and home ----
 
-    fun reportForDuty(input: String) {
-        val clean = input.trim().replace(Regex("\\s+"), " ").take(18)
+    fun saveName(input: String) {
+        val clean = input.trim().replace(Regex("\\s+"), " ").take(16)
         if (clean.isEmpty()) return
         name = clean
         store.name = clean
-        screen = Screen.Desk
+        screen = Screen.Home
     }
 
-    /** Starts today's case, or a practice replay if it's already finished. */
-    fun takeTheCall() {
-        found = List(3) { false }
-        inspecting = null
-        wall = WallState.start(file.groups, file.decoys)
-        filing = emptySet()
-        shakeWord = null
-        newStatement = null
-        room = Interrogation.start(file)
-        current = 0
-        typing = null
-        arrestArmed = false
-        commissionerSays = null
-        page = null
-        promotedTo = null
+    fun changeName() {
+        screen = Screen.Name
+    }
+
+    fun goHome() {
+        screen = Screen.Home
+    }
+
+    /** Starts today's case from the phone call (or a practice replay if it's already done). */
+    fun play() {
+        seenSpots = emptySet(); examPick = null; examRuledOut = emptySet(); examFeedback = null; examMistakes = 0
+        search = SearchState(file); searchMessage = null; hinted = null; openClue = null; clueRuledOut = emptySet()
+        clueSolved = false; newString = null
+        questioning = Questioning(file); selected = null; lastReply = null
+        arrest = ArrestState(file); votePick = null; lastArrested = null
+        result = null
+        sfx.pin()
         screen = Screen.Call
     }
 
-    fun readTodaysPaper() {
-        page = todaysPage
-        promotedTo = null
-        screen = Screen.News
+    fun showTodaysResult() {
+        result = todaysResult
+        screen = Screen.Result
     }
 
-    fun backToDesk() {
-        screen = Screen.Desk
-    }
+    // ---- Call and arrival ----
 
-    // ---- Phone call ----
-
-    fun onMyWay() {
+    fun goToScene() {
         sfx.siren()
         startedAt = System.currentTimeMillis()
-        screen = Screen.Scene
+        screen = Screen.Arrival
     }
 
-    // ---- Crime scene ----
+    fun examine() {
+        sfx.pin()
+        screen = Screen.Examine
+    }
 
-    /** The detective taps a clue they can see in the torchlight. */
-    fun pickUp(index: Int) {
-        if (found[index] || inspecting != null) return
-        inspecting = index
+    // ---- Examination ----
+
+    fun checkSpot(index: Int) {
+        if (index in seenSpots) return
+        seenSpots = seenSpots + index
         sfx.found()
     }
 
-    fun putInBag() {
-        val i = inspecting ?: return
-        found = found.mapIndexed { j, f -> f || j == i }
-        inspecting = null
+    val allSpotsSeen: Boolean get() = seenSpots.size == file.examination.spots.size
+
+    fun pickExamOption(index: Int) {
+        if (examFeedback == Feedback.RIGHT || index in examRuledOut) return
+        examFeedback = null
+        examPick = index
         sfx.pin()
     }
 
-    fun backToStation() {
-        sfx.siren()
-        panduLine = "Inspector $name, the witnesses are here. Each one will tell you what to find on the wall."
-        screen = Screen.Wall
+    fun checkExam() {
+        val pick = examPick ?: return
+        if (pick == file.examination.answer) {
+            examFeedback = Feedback.RIGHT
+            sfx.success()
+        } else {
+            examFeedback = Feedback.WRONG
+            examMistakes++
+            sfx.snap()
+        }
     }
 
-    // ---- Evidence wall ----
+    fun retryExam() {
+        examPick?.let { examRuledOut = examRuledOut + it }
+        examPick = null
+        examFeedback = null
+    }
 
-    fun tapNote(word: String) {
-        if (filingNow || newStatement != null) return
-        val (next, result) = wall.tap(word)
-        when (result) {
-            TapResult.Pinned -> {
-                wall = next
-                sfx.pin()
-                val left = 4 - next.picked.size
-                panduLine = "Yes! That's one. $left more to go."
+    fun startSearch() {
+        screen = Screen.Search
+    }
+
+    // ---- Search ----
+
+    fun searchAt(id: String) {
+        if (openClue != null) return
+        val (next, res) = search.search(id)
+        search = next
+        when (res) {
+            is SearchResult.Found -> {
+                sfx.found()
+                openClue = res.clue
+                clueRuledOut = emptySet()
+                clueSolved = false
+                hinted = null
             }
-            is TapResult.TaskDone -> {
-                sfx.success()
-                filingNow = true
-                wall = wall.copy(picked = wall.picked + word)
-                filing = wall.picked.toSet()
-                viewModelScope.launch {
-                    delay(700)
-                    wall = next
-                    filing = emptySet()
-                    filingNow = false
-                    newStatement = result.groupIndex
-                    panduLine = if (next.isOver) "All witnesses have talked! Inspector, let's go meet the suspects."
-                    else "Shabash, Inspector! The next witness is waiting."
-                }
-            }
-            TapResult.Wrong -> {
-                wall = next
+            is SearchResult.Nothing -> {
                 sfx.snap()
-                shakeWord = word
-                shakeTick++
-                panduLine = "Not that one, Inspector! ${word.uppercase()} doesn't fit. That cost me a cup of chai ☕"
+                searchMessage = res.text
+                searchMessageTick++
             }
-            TapResult.OutOfPatience -> {
-                wall = next
-                sfx.snap()
-                shakeWord = word
-                shakeTick++
-                panduLine = "Inspector, my chai is finished and so is my patience! 😅 Let's take what we have to the interrogation room."
-            }
-            TapResult.Ignored -> Unit
+            SearchResult.Ignored -> Unit
         }
     }
 
     fun askPandu() {
-        val next = wall.hint() ?: return
-        wall = next
-        panduLine = "Psst… look at the glowing note 👀 (hint: −5 points)"
+        val (next, place) = search.hint() ?: return
+        search = next
+        hinted = place
     }
 
-    fun dismissStatement() {
-        newStatement = null
-    }
-
-    fun toInterrogation() {
-        room = room.callIn(current)
-        screen = Screen.Room
-    }
-
-    // ---- Interrogation ----
-
-    fun callIn(suspect: Int) {
-        if (typing != null) return
-        current = suspect
-        arrestArmed = false
-        room = room.callIn(suspect)
-    }
-
-    fun showEvidence(statement: Int) {
-        if (typing != null || room.isOver) return
-        val suspect = current
-        if (statement in room.shown[suspect]) return
-        room = room.present(suspect, statement)
-        typing = suspect
-        viewModelScope.launch {
-            delay(750)
-            room = room.respond(suspect, statement)
-            typing = null
-            when (room.moods[suspect]) {
-                Mood.NERVOUS -> sfx.nervous()
-                Mood.RELIEVED -> sfx.success()
-                Mood.CALM -> Unit
-            }
-        }
-    }
-
-    fun arrest() {
-        if (typing != null || room.isOver) return
-        if (!arrestArmed) {
-            arrestArmed = true
-            return
-        }
-        arrestArmed = false
-        val suspect = current
-        room = room.arrest(suspect)
-        if (room.isOver) {
-            finishCase()
+    fun answerClue(suspect: Int) {
+        val clue = openClue ?: return
+        if (clueSolved || suspect in clueRuledOut) return
+        val (next, right) = search.answer(clue, suspect)
+        search = next
+        if (right) {
+            clueSolved = true
+            newString = suspect
+            sfx.success()
         } else {
+            clueRuledOut = clueRuledOut + suspect
             sfx.snap()
-            commissionerSays = file.releaseLines[suspect]
         }
     }
 
-    private fun finishCase() {
-        val minutes = ((System.currentTimeMillis() - startedAt) / 60_000L).toInt()
-        val front = Newspaper.write(file, name, minutes, wall, room)
-        page = front
-        val before = careerRank
-        val firstFinish = todaysPage == null
-        store.saveFinished(today, front, room.caught)
-        if (firstFinish) {
-            todaysPage = front
+    fun bagClue() {
+        openClue = null
+        clueSolved = false
+        searchMessage = null
+        sfx.pin()
+    }
+
+    fun startQuestioning() {
+        screen = Screen.Questioning
+    }
+
+    // ---- Questioning ----
+
+    fun selectSuspect(index: Int) {
+        selected = index
+        lastReply = null
+        sfx.pin()
+    }
+
+    fun showClue(clue: Int) {
+        val suspect = selected ?: return
+        val (next, reply) = questioning.show(suspect, clue)
+        questioning = next
+        lastReply = reply
+        if (!reply.bySuspect) {
+            gotchaTick++
+            sfx.nervous()
+        } else {
+            sfx.pin()
+        }
+    }
+
+    fun goToVote() {
+        votePick = null
+        screen = Screen.Vote
+    }
+
+    // ---- Arrest ----
+
+    fun pickForArrest(index: Int) {
+        if (index in arrest.released) return
+        votePick = index
+        sfx.pin()
+    }
+
+    fun makeArrest() {
+        val pick = votePick ?: return
+        arrest = arrest.arrest(pick)
+        lastArrested = pick
+        if (arrest.caught) sfx.cuffs() else sfx.snap()
+        sfx.stamp()
+        if (arrest.isOver) finish()
+        screen = Screen.Reveal
+    }
+
+    fun afterReveal() {
+        screen = if (arrest.isOver) Screen.Result else Screen.Vote
+        votePick = null
+    }
+
+    private fun finish() {
+        val seconds = ((System.currentTimeMillis() - startedAt) / 1000L).toInt()
+        val card = Scoring.result(case.number, file, seconds, examMistakes, search, arrest)
+        result = card
+        if (todaysResult == null) {
+            store.saveFinished(today, card)
+            todaysResult = card
             solvedCount = store.solvedCount
             streak = store.streak(today)
-            promotedTo = careerRank.takeIf { it != before }
         }
-        screen = Screen.Arrest
-    }
-
-    // ---- Arrest and newspaper ----
-
-    fun readNewspaper() {
-        screen = Screen.News
     }
 
     override fun onCleared() {

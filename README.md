@@ -2,19 +2,21 @@
 
 **One mystery a day, and you're the detective.** A story-driven daily puzzle game for Android.
 
-1. 🪪 **Your ID card.** Pick your name once; everyone in the game calls you "Inspector ___".
-2. 📞 **The midnight call.** The Commissioner phones with today's case, typed out letter by letter.
-3. 🔦 **Search the crime scene.** The room is dark. Drag your finger to move the torch. When a clue
-   sparkles ✨ in the light, tap it to pick it up and put it in your evidence bag.
-4. 📌 **The evidence wall.** Witnesses come one at a time and say exactly what to find, e.g.
-   *"Find the 4 SWEETS on the wall."* Tap the right notes to pin them with red string; wrong notes
-   cost Pandu's chai ☕. Then the witness gives their statement. Constable Pandu gives hints.
-5. 💡 **The interrogation room.** Call in each suspect, show them statements, and watch them react.
-   Innocent people relax 😌. The liar starts sweating 💦. Your notebook fills itself in.
-6. 🚔 **The arrest.** Handcuffs, a CASE CLOSED stamp, and the culprit's confession with a twist.
-7. 📰 **Tomorrow's newspaper.** A front page about you, with your rating and a share button.
+1. 📞 **The call.** The Commissioner rings with today's case.
+2. 🚧 **Arrival.** Police tape, and Constable Pandu's 4-line briefing. The cause is always "unknown".
+3. 🔍 **Examine.** Tap 3 marked spots on the body (or the broken cupboard, the cut bag…),
+   then answer one question: how did it happen?
+4. 🗑️ **Search.** A forensics note gives a riddle about *where* to look, never *what* you'll find.
+   Tap places in the room to search them. When you find the clue, decide **who it points to**,
+   using the facts on each suspect's card. Right answers tie red string 🧶 to that suspect.
+5. 💡 **Questioning.** Show your evidence to each suspect. Innocent people explain; the liar gets
+   caught with a big **GOTCHA!**
+6. 🚔 **Arrest.** Pick who did it. Two warrants: one wrong arrest is forgiven.
+7. ⭐ **Result.** Stars, time, mistakes, streak, a spoiler-free share text, and a countdown to
+   tomorrow's case.
 
-Solving cases promotes you: Rookie → Sub-Inspector → Inspector → ACP → Commissioner.
+Every case screen has the same shape: a 5-part progress bar on top, the scene in the middle,
+one big button at the bottom.
 
 ## Run it
 
@@ -31,42 +33,40 @@ Run the game-logic tests (no Android SDK needed):
 
 ```
 engine/   Plain Kotlin game rules, no Android code. Fully unit-tested.
-  board/    The evidence wall (immutable state)
-  cases/    Case content, the interrogation room, the daily case library
-  score/    Scoring, career ranks, the newspaper and share text
+  cases/    Case content (Case.kt, CaseLibrary.kt) and the rules for searching,
+            questioning and arresting (Investigation.kt)
+  score/    Stars, share text and career ranks
   logic/    Logic-grid puzzle generator, kept for a future "Detective mode"
 app/      Android app, Jetpack Compose UI
   GameViewModel.kt   All game state, one screen at a time
-  ProgressStore.kt   Name, career, streak and today's newspaper (SharedPreferences)
+  ProgressStore.kt   Name, career, streak and today's result (SharedPreferences)
   Sfx.kt             Built-in tones and vibration
-  ui/                Id/Desk, Call, Scene, Wall, Room, Arrest and News screens
+  ui/                StartScreens (name, home, call), CrimeSceneScreens (arrival, examine,
+                     search), EndScreens (questioning, vote, reveal, result)
 ```
 
 ## Scoring
 
-Start at 100. Each wrong note costs 5, each missed statement 10, each hint 5, and each wrong
-arrest 25. If the culprit escapes, the score can't go above 30.
-90+ is ★★★ Sherlock, 70+ ★★ Sharp Inspector, 45+ ★ Constable on Duty.
+Three stars to start. Lose one for 4 or more mistakes (wrong answers and wrong searches; a hint
+counts as 2), and one for a wrong arrest. If the culprit escapes, no stars.
 
 ## Writing a new case
 
-Add a `CaseFile` to `CaseLibrary.cases`:
+Add a `CaseFile` to `CaseLibrary.cases`. The tests check the rules below.
 
-- a title, the Commissioner's call (`{name}` becomes the detective's name) and a one-line crime,
-- a crime scene: 3 pieces of evidence (emoji, position, what it means) and some background objects,
-- 3 word groups for the wall, each with its witness: what they ask you to find (give an example that
-  isn't on the wall) and the statement they give. Plus 4 trick notes that fit no witness,
-- 3 suspects with an alibi and a few small-talk lines; vary which chair the culprit sits in,
-- reactions: one statement that makes each innocent relax, and one that makes the culprit sweat,
-- what the Commissioner says when an innocent is arrested,
-- the confession, what happens if they escape, and the detective's quote for the newspaper.
-
-The tests check that only the culprit ever gets nervous and that every innocent can be cleared.
+- **Briefing:** 4 lines, the last one "unknown".
+- **Examination:** 3 spots and one "how did it happen?" question.
+- **Room:** about 11 places to search, each with a funny line for when nothing is there.
+- **3 clues:** a riddle about where it is, what you find (mark the key words with `**bold**`),
+  and which suspect it points to. Make the first clue point to an innocent who can explain it.
+- **3 suspects:** each with 2 visible facts the clues can match, where they say they were, an
+  alibi, and a reply to every clue. Only the culprit has "gotchas". Vary which chair they sit in.
+- A release line for each innocent, the confession, and what happens if the culprit escapes.
 
 ## Roadmap
 
+- [ ] First-time tutorial hand on the search and questioning screens
+- [ ] Real illustrated art instead of emoji
 - [ ] Daily "📞 New case" notification at midnight (WorkManager)
 - [ ] Load cases from a server instead of shipping them in the app
-- [ ] Office that grows with your rank, and a cabinet of solved case files
-- [ ] Rain and noir music
 - [ ] Friend Case: make a mystery starring your friends and send it as a link

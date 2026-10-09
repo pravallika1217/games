@@ -1,10 +1,9 @@
 package com.alibi.game
 
 import android.content.Context
-import com.alibi.engine.score.FrontPage
-import com.alibi.engine.score.Verdict
+import com.alibi.engine.score.ResultCard
 
-/** The detective's name, career, streak and today's newspaper. */
+/** The detective's name, career, streak and today's result. */
 class ProgressStore(context: Context) {
     private val prefs = context.getSharedPreferences("alibi_progress", Context.MODE_PRIVATE)
 
@@ -24,42 +23,33 @@ class ProgressStore(context: Context) {
         return if (last == today || last == today - 1) prefs.getInt(KEY_STREAK, 0) else 0
     }
 
-    fun pageFor(day: Long): FrontPage? {
-        val headline = prefs.getString("headline_$day", null) ?: return null
-        return FrontPage(
-            headline = headline,
-            subhead = prefs.getString("subhead_$day", "") ?: "",
-            photo = prefs.getString("photo_$day", "") ?: "",
-            caption = prefs.getString("caption_$day", "") ?: "",
-            columns = listOf(prefs.getString("col1_$day", "") ?: "", prefs.getString("col2_$day", "") ?: ""),
-            verdict = Verdict(
-                points = prefs.getInt("points_$day", 0),
-                stars = prefs.getInt("stars_$day", 0),
-                title = prefs.getString("title_$day", "") ?: "",
-            ),
-            shareText = prefs.getString("share_$day", "") ?: "",
+    fun resultFor(day: Long): ResultCard? {
+        val share = prefs.getString("share_$day", null) ?: return null
+        return ResultCard(
+            stars = prefs.getInt("stars_$day", 0),
+            title = prefs.getString("title_$day", "") ?: "",
+            seconds = prefs.getInt("seconds_$day", 0),
+            mistakes = prefs.getInt("mistakes_$day", 0),
+            caught = prefs.getBoolean("caught_$day", false),
+            shareText = share,
         )
     }
 
     /** Saves today's first finished case. Practice replays of the same day are not saved. */
-    fun saveFinished(day: Long, page: FrontPage, caught: Boolean) {
-        if (pageFor(day) != null) return
+    fun saveFinished(day: Long, result: ResultCard) {
+        if (resultFor(day) != null) return
         val last = prefs.getLong(KEY_LAST_DAY, Long.MIN_VALUE)
         val streak = if (last == day - 1) prefs.getInt(KEY_STREAK, 0) + 1 else 1
         prefs.edit()
-            .putString("headline_$day", page.headline)
-            .putString("subhead_$day", page.subhead)
-            .putString("photo_$day", page.photo)
-            .putString("caption_$day", page.caption)
-            .putString("col1_$day", page.columns.getOrElse(0) { "" })
-            .putString("col2_$day", page.columns.getOrElse(1) { "" })
-            .putInt("points_$day", page.verdict.points)
-            .putInt("stars_$day", page.verdict.stars)
-            .putString("title_$day", page.verdict.title)
-            .putString("share_$day", page.shareText)
+            .putInt("stars_$day", result.stars)
+            .putString("title_$day", result.title)
+            .putInt("seconds_$day", result.seconds)
+            .putInt("mistakes_$day", result.mistakes)
+            .putBoolean("caught_$day", result.caught)
+            .putString("share_$day", result.shareText)
             .putLong(KEY_LAST_DAY, day)
             .putInt(KEY_STREAK, streak)
-            .putInt(KEY_SOLVED, solvedCount + if (caught) 1 else 0)
+            .putInt(KEY_SOLVED, solvedCount + if (result.caught) 1 else 0)
             .apply()
     }
 
