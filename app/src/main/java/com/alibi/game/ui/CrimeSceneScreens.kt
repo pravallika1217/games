@@ -1,6 +1,5 @@
 package com.alibi.game.ui
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -18,19 +17,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,13 +39,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import com.alibi.engine.cases.Suspect
 import com.alibi.game.Feedback
 import com.alibi.game.GameViewModel
 
@@ -130,7 +120,7 @@ fun ExamineScreen(vm: GameViewModel) {
                 !allSeen -> BigButton("${vm.seenSpots.size} of ${exam.spots.size} checked", onClick = {}, enabled = false)
                 vm.examFeedback == Feedback.RIGHT -> {
                     FeedbackLine(Feedback.RIGHT, exam.why)
-                    BigButton("Search the ${vm.file.place}", onClick = vm::startSearch, tone = Tone.GREEN)
+                    BigButton("See who was there", onClick = vm::meetPeople, tone = Tone.GREEN)
                 }
                 vm.examFeedback == Feedback.WRONG -> {
                     FeedbackLine(Feedback.WRONG, "Look at what you found again.")
@@ -222,230 +212,9 @@ fun ExamineScreen(vm: GameViewModel) {
     }
 }
 
-// ---------------------------------------------------------------- Search
-
-/**
- * Riddle search. Suspects stay pinned at the top with their facts. The note says where to look;
- * tap a place in the room to search it.
- */
-@Composable
-fun SearchScreen(vm: GameViewModel) {
-    val file = vm.file
-    val search = vm.search
-    val current = search.current
-    CaseScreen(step = 2, part = search.found.size / 3f, onClose = vm::goHome, bottom = {
-        if (current == null) BigButton("Question the suspects", onClick = vm::startQuestioning)
-        else BigButton("Find clue ${current + 1} of 3", onClick = {}, enabled = false)
-    }) {
-        SuspectStrip(file.suspects, search.strings, vm.newString)
-        if (current != null) {
-            PaperNote(
-                "FORENSICS NOTE · CLUE ${current + 1} OF 3",
-                file.clues[current].riddle,
-                trailing = file.clues.indices.joinToString(" ") { if (it in search.found) file.clues[it].emoji else "?" },
-            )
-        } else {
-            PaperNote("FORENSICS NOTE", "All 3 clues are in your evidence bag. Look at the red strings: who do they point to?")
-        }
-
-        // What the last search turned up. Above the room, so it never covers anything.
-        val flash = remember { Animatable(0f) }
-        LaunchedEffect(vm.searchMessageTick) {
-            if (vm.searchMessageTick > 0) { flash.snapTo(1f); flash.animateTo(0f, tween(500)) }
-        }
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = 44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(lerpColor(Noir.Panel, Noir.RedBg, flash.value))
-                .border(1.dp, lerpColor(Noir.Line, Noir.Red, flash.value), RoundedCornerShape(12.dp))
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                when {
-                    current == null -> "✅ All 3 clues found."
-                    vm.searchMessage != null -> "🔍 ${vm.searchMessage} (${search.wrongSearches} wrong)"
-                    else -> "Tap a place in the ${file.place} to search it."
-                },
-                color = Noir.Text,
-                fontSize = 15.sp,
-                modifier = Modifier.weight(1f),
-            )
-            if (search.canAskForHint && vm.hinted == null) {
-                Text("Stuck? Ask Pandu", color = Noir.Amber, fontWeight = FontWeight.SemiBold, fontSize = 14.sp,
-                    modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable(onClick = vm::askPandu).padding(6.dp))
-            }
-        }
-
-        Room(vm)
-    }
-
-    vm.openClue?.let { ClueCard(vm, it) }
-}
-
-@Composable
-private fun SuspectStrip(suspects: List<Suspect>, strings: List<Int>, glowing: Int?) {
-    Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        suspects.forEachIndexed { i, s ->
-            val glow = remember { Animatable(0f) }
-            LaunchedEffect(glowing, strings[i]) { if (glowing == i) { glow.snapTo(1f); glow.animateTo(0f, tween(1400)) } }
-            Column(
-                Modifier
-                    .weight(1f)
-                    .graphicsLayer { rotationZ = listOf(-2f, 1.5f, -1f)[i % 3] }
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Noir.PaperEdge)
-                    .padding(bottom = 3.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Noir.Paper)
-                    .border(3.dp, Noir.String.copy(alpha = glow.value), RoundedCornerShape(4.dp))
-                    .padding(vertical = 6.dp, horizontal = 2.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(s.emoji, fontSize = 22.sp)
-                Text(s.shortName, color = Noir.Ink, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                Text("${s.traits.joinToString(" ") { it.emoji }} · ${s.says}", color = Noir.Ink.copy(alpha = 0.7f), fontSize = 10.sp, textAlign = TextAlign.Center, lineHeight = 13.sp)
-                Text("🧶".repeat(strings[i]), fontSize = 11.sp, modifier = Modifier.heightIn(min = 14.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun Room(vm: GameViewModel) {
-    val file = vm.file
-    val search = vm.search
-    val pulse = rememberInfiniteTransition(label = "hint")
-    val glow by pulse.animateFloat(1f, 1.18f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "glow")
-    BoxWithConstraints(
-        Modifier
-            .fillMaxWidth()
-            .aspectRatio(10f / 9f)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Brush.verticalGradient(0f to Color(0xFF34403F), 0.36f to Color(0xFF34403F), 0.36f to Color(0xFF4A3A2C), 1f to Color(0xFF4A3A2C)))
-    ) {
-        val w = maxWidth
-        val h = maxHeight
-        Box(Modifier.offset(y = h * 0.29f).fillMaxWidth().height(h * 0.12f).background(Color(0xFF5F4D3B)))
-        file.hideouts.forEach { place ->
-            val searched = place.id in search.searched
-            val hinted = place.id == vm.hinted
-            PlaceButton(
-                emoji = place.emoji,
-                label = place.label,
-                x = w * place.x,
-                y = h * place.y,
-                faded = searched,
-                scale = if (hinted) glow else 1f,
-                glow = hinted,
-                onClick = { vm.searchAt(place.id) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlaceButton(emoji: String, label: String, x: Dp, y: Dp, faded: Boolean, scale: Float, glow: Boolean, onClick: () -> Unit) {
-    Column(
-        Modifier
-            .offset(x = x - 40.dp, y = y - 28.dp)
-            .width(80.dp)
-            .graphicsLayer { alpha = if (faded) 0.35f else 1f }
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(vertical = 2.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            emoji,
-            fontSize = 30.sp,
-            modifier = Modifier
-                .graphicsLayer { scaleX = scale; scaleY = scale }
-                .then(if (glow) Modifier.clip(RoundedCornerShape(50)).background(Noir.Amber.copy(alpha = 0.35f)) else Modifier),
-        )
-        Text(
-            label,
-            color = Color(0xFFE8E0CF),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(Color(0x73000000)).padding(horizontal = 6.dp, vertical = 1.dp),
-        )
-    }
-}
-
-/** "CLUE FOUND" card: what it is, then "Who does this point to?" with the suspects as answers. */
-@Composable
-private fun ClueCard(vm: GameViewModel, index: Int) {
-    val clue = vm.file.clues[index]
-    Dialog(onDismissRequest = {}) {
-        Column(
-            Modifier
-                .graphicsLayer { rotationZ = -1f }
-                .clip(RoundedCornerShape(8.dp))
-                .background(Noir.Paper)
-                .verticalScroll(rememberScrollState())
-                .padding(18.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text("CLUE FOUND", color = Color(0xFFB2382F), fontFamily = Noir.Typewriter, fontSize = 12.sp, letterSpacing = 2.sp)
-            Text(clue.emoji, fontSize = 56.sp)
-            Text(clue.name, color = Noir.Ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text(bold(clue.found), color = Noir.Ink, fontSize = 15.sp, textAlign = TextAlign.Center, lineHeight = 21.sp)
-            Box(Modifier.fillMaxWidth().padding(vertical = 4.dp).height(1.dp).background(Noir.Ink.copy(alpha = 0.2f)))
-            Text("🤔 Who does this point to?", color = Noir.Ink, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.fillMaxWidth())
-            vm.file.suspects.forEachIndexed { i, s ->
-                val right = vm.clueSolved && i == clue.pointsTo
-                val wrong = i in vm.clueRuledOut
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(when { right -> Color(0xFFDFF3E5); wrong -> Color(0xFFF8DCD9); else -> Color(0xFFFFFAF0) })
-                        .border(2.dp, when { right -> Color(0xFF2C8A52); wrong -> Noir.String; else -> Noir.Ink.copy(alpha = 0.2f) }, RoundedCornerShape(10.dp))
-                        .clickable(enabled = !vm.clueSolved && !wrong) { vm.answerClue(i) }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Text(s.emoji, fontSize = 30.sp)
-                    Column {
-                        Text(s.name, color = Noir.Ink, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                        s.traits.forEach { Text("${it.emoji} ${it.text}", color = Noir.Ink.copy(alpha = 0.75f), fontSize = 12.sp) }
-                    }
-                }
-            }
-            when {
-                vm.clueSolved -> {
-                    Text(
-                        "✓ ${clue.why}\n🧶 Red string tied to ${vm.file.suspects[clue.pointsTo].name}.",
-                        color = Color(0xFF1F5F39),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    BigButton("Put it in the evidence bag", onClick = vm::bagClue)
-                }
-                vm.clueRuledOut.isNotEmpty() -> Text(
-                    "Not quite. Read their details again.",
-                    color = Color(0xFFB2382F),
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
-    }
-}
-
 /** Turns "a **key** word" into text with the key word in bold. */
 fun bold(text: String): AnnotatedString = buildAnnotatedString {
     text.split("**").forEachIndexed { i, part ->
         if (i % 2 == 1) withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(part) } else append(part)
     }
 }
-
-private fun lerpColor(a: Color, b: Color, t: Float) = androidx.compose.ui.graphics.lerp(a, b, t)

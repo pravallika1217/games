@@ -1,0 +1,308 @@
+{
+  "id": "sangeet",
+  "title": "Death at the Sangeet",
+  "call": [
+    "Inspector {name}, Uncle Raj is dead at his nephew's wedding.",
+    "400 guests, and nobody saw a thing. Find the killer before morning."
+  ],
+  "arrival": "The sangeet music has stopped. Everyone is waiting outside.",
+  "briefing": [
+    {
+      "emoji": "🧍",
+      "label": "Victim",
+      "value": "Uncle Raj, 62. Rich, and the groom's uncle."
+    },
+    {
+      "emoji": "🕛",
+      "label": "Time",
+      "value": "Around midnight"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "The kitchen"
+    },
+    {
+      "emoji": "❓",
+      "label": "Cause",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the body",
+    "spots": [
+      {
+        "title": "Mouth",
+        "text": "No wounds anywhere. His lips smell bitter, like medicine.",
+        "x": 0.5,
+        "y": 0.18
+      },
+      {
+        "title": "Right hand",
+        "text": "He's holding an empty sweet wrapper, round, with tiny yellow crumbs. Where's the sweet?",
+        "x": 0.28,
+        "y": 0.5
+      },
+      {
+        "title": "Pocket",
+        "text": "A note: \"I've changed my will. All my money goes to the temple. – Raj\"",
+        "x": 0.58,
+        "y": 0.64
+      }
+    ],
+    "question": "How did Uncle Raj die?",
+    "options": [
+      "🔪 Someone stabbed him",
+      "🧪 Someone poisoned him",
+      "🪜 He fell down"
+    ],
+    "answer": 1,
+    "why": "No wounds, bitter lips, and a sweet in his hand. Someone poisoned his sweet."
+  },
+  "people": [
+    {
+      "id": "aunty",
+      "name": "Aunty Kamala",
+      "emoji": "👵",
+      "group": "Family",
+      "traits": [
+        {
+          "emoji": "👓",
+          "text": "Reading glasses"
+        },
+        {
+          "emoji": "🛺",
+          "text": "Came by auto"
+        }
+      ]
+    },
+    {
+      "id": "priya",
+      "name": "Bride Priya",
+      "emoji": "👰",
+      "group": "Family",
+      "traits": [
+        {
+          "emoji": "👀",
+          "text": "No glasses"
+        },
+        {
+          "emoji": "🚗",
+          "text": "Drives a car"
+        }
+      ],
+      "interview": {
+        "says": "Mehndi tent",
+        "alibi": "I was getting my bridal mehndi done all night!",
+        "replies": [
+          "Yes, I'm family. But Aunty Kamala was doing my mehndi for 3 hours!",
+          "I don't even wear glasses!",
+          "That's not my key. My car keys are with my father tonight."
+        ],
+        "release": "Aunty Kamala was doing Priya's mehndi all night."
+      }
+    },
+    {
+      "id": "arjun",
+      "name": "Groom Arjun",
+      "emoji": "🤵",
+      "group": "Family",
+      "traits": [
+        {
+          "emoji": "🕶️",
+          "text": "Sunglasses"
+        },
+        {
+          "emoji": "🚗",
+          "text": "Drives a car"
+        }
+      ],
+      "interview": {
+        "says": "Stage",
+        "alibi": "I was on the stage for photos all night!",
+        "replies": [
+          "I'm family, but I never left the stage.",
+          "My sunglasses? They're right here, on my head.",
+          "My car key is right here, in my pocket."
+        ],
+        "release": "400 guests saw Arjun on the stage all night."
+      }
+    },
+    {
+      "id": "vikram",
+      "name": "Cousin Vikram",
+      "emoji": "🧔",
+      "group": "Family",
+      "traits": [
+        {
+          "emoji": "🕶️",
+          "text": "Sunglasses"
+        },
+        {
+          "emoji": "🚗",
+          "text": "Drives a car"
+        }
+      ],
+      "interview": {
+        "says": "Parking lot",
+        "alibi": "I was in the parking lot, on a long phone call.",
+        "replies": [
+          "A laddu? I don't even eat sweets.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "Where are your sunglasses, Vikram? They were by the chilli powder, covered in mud!",
+          "This muddy key opens YOUR car, Vikram!"
+        ]
+      }
+    },
+    {
+      "id": "rocky",
+      "name": "DJ Rocky",
+      "emoji": "🎧",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "🕶️",
+          "text": "Sunglasses"
+        },
+        {
+          "emoji": "🛺",
+          "text": "Came by auto"
+        }
+      ]
+    },
+    {
+      "id": "cook",
+      "name": "Cook Ramesh",
+      "emoji": "👨‍🍳",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "👀",
+          "text": "No glasses"
+        },
+        {
+          "emoji": "🚲",
+          "text": "Came by cycle"
+        }
+      ]
+    },
+    {
+      "id": "photo",
+      "name": "Photographer Sam",
+      "emoji": "📸",
+      "group": "Guest",
+      "traits": [
+        {
+          "emoji": "🕶️",
+          "text": "Sunglasses"
+        },
+        {
+          "emoji": "🚗",
+          "text": "Drives a car"
+        }
+      ]
+    },
+    {
+      "id": "pandit",
+      "name": "Pandit ji",
+      "emoji": "🧘",
+      "group": "Guest",
+      "traits": [
+        {
+          "emoji": "👓",
+          "text": "Reading glasses"
+        },
+        {
+          "emoji": "🛺",
+          "text": "Came by auto"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "✋ The sweet wrapper in his hand",
+      "question": "The wrapper is round, with tiny yellow crumbs inside. Which sweet was in it?",
+      "options": [
+        "🍥 Jalebi",
+        "🟠 Laddu",
+        "🍫 Barfi",
+        "🟤 Gulab jamun"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Jalebi is long and twisty, not round.",
+        null,
+        "Barfi is square, not round.",
+        "Gulab jamun is brown and syrupy, not crumbly."
+      ],
+      "reveal": "A laddu! Pandu digs through the dustbin…",
+      "emoji": "🟠",
+      "name": "Half-eaten laddu",
+      "found": "In the dustbin, hidden under vegetable peels. Its wrapper says **\"Sharma FAMILY – special laddu\"**. Only family got these. It also smells of red chilli.",
+      "task": "cross",
+      "fact": "Family",
+      "ask": "Cross out everyone who is NOT family.",
+      "why": "These laddus were only for the family.",
+      "card": "A FAMILY-only laddu was poisoned"
+    },
+    {
+      "from": "🟠 The laddu smells of red chilli",
+      "question": "Laddus are sweet. So why does this one smell of red chilli? What was the poison mixed into?",
+      "options": [
+        "🍚 Sugar",
+        "🌶️ Chilli powder",
+        "🧈 Ghee",
+        "🥛 Milk"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Sugar doesn't smell of chilli.",
+        null,
+        "Ghee doesn't smell of chilli.",
+        "Milk doesn't smell of chilli."
+      ],
+      "reveal": "Chilli powder! Its strong taste hides the poison. You check the spice rack…",
+      "emoji": "🕶️",
+      "name": "Sunglasses",
+      "found": "A pair of **sunglasses** next to the chilli powder. There's **wet mud** on them.",
+      "task": "mark",
+      "fact": "Sunglasses",
+      "ask": "Tap everyone left who wears sunglasses.",
+      "why": "Arjun and Vikram both wear sunglasses. You'll have to question them.",
+      "card": "SUNGLASSES left by the chilli powder"
+    },
+    {
+      "from": "🕶️ Mud on the sunglasses",
+      "question": "There's wet mud on the sunglasses, but the kitchen floor is dry. Where had the killer been?",
+      "options": [
+        "🎤 On the stage",
+        "🌧️ Outside",
+        "🛏️ Upstairs"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "The stage has a carpet. No mud there.",
+        null,
+        "Upstairs is dry too."
+      ],
+      "reveal": "Outside, in the wet garden! You open the back door…",
+      "emoji": "🔑",
+      "name": "Car key",
+      "found": "A muddy **car key**, dropped on the back step in a hurry.",
+      "task": "cross",
+      "fact": "Drives a car",
+      "ask": "Cross out everyone left who does NOT drive a car.",
+      "why": "The killer drives a car. Aunty Kamala came by auto.",
+      "card": "A muddy CAR KEY at the back door"
+    }
+  ],
+  "culprit": "vikram",
+  "confession": "\"Uncle Raj was giving all his money to the temple. I only wanted my share.\"",
+  "escapeStory": "Cousin Vikram got away. Airport police caught him two days later. \"I only wanted my share of the money.\""
+}

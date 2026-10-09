@@ -14,7 +14,15 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+
+        // Where new cases are downloaded from. Any static web host works (GitHub Pages,
+        // Firebase Hosting…). It must serve the files in content/cases. Leave it empty to only
+        // use the cases shipped in the app.
+        buildConfigField("String", "CASES_URL", "\"https://raw.githubusercontent.com/pravallika1217/games/main/content/cases/\"")
     }
+
+    // The same case files that get published are shipped inside the app, for offline play.
+    sourceSets["main"].assets.srcDir(rootProject.file("content"))
 
     buildTypes {
         release {
@@ -33,6 +41,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

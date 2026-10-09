@@ -46,7 +46,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.alibi.engine.cases.CaseLibrary
 import com.alibi.game.GameViewModel
 import kotlinx.coroutines.delay
 
@@ -109,7 +108,7 @@ fun HomeScreen(vm: GameViewModel) {
                     .background(Brush.radialGradient(listOf(Color(0xFF6B3A5A), Color(0xFF241A2C), Color(0xFF14121A)))),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(vm.file.suspects.joinToString("  ") { it.emoji }, fontSize = 48.sp)
+                Text(vm.file.people.joinToString(" ") { it.emoji }, fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 16.dp))
                 Text(
                     if (done == null) "TODAY'S CASE" else "CASE CLOSED ✓",
                     color = Noir.Text,
@@ -123,15 +122,14 @@ fun HomeScreen(vm: GameViewModel) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("CASE #${vm.case.number}", color = Noir.Amber, fontFamily = Noir.Typewriter, fontSize = 13.sp, letterSpacing = 1.sp)
                 Text(vm.file.title, color = Noir.Text, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Text("⏱ 5 min   🟢 Easy   👤 3 suspects", color = Noir.Dim, fontSize = 14.sp)
+                Text("⏱ 5 min   🔎 ${vm.file.leads.size} clues   👥 ${vm.file.people.size} people", color = Noir.Dim, fontSize = 14.sp)
             }
         }
 
         Text("Your cases", color = Noir.Dim, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-        val cases = CaseLibrary.cases
         (0 until 3).forEach { offset ->
             val number = vm.case.number + offset
-            val title = cases[Math.floorMod(number - 1, cases.size)].title
+            val title = if (offset == 0) vm.file.title else "Case #$number"
             val today = offset == 0
             Row(
                 Modifier

@@ -2,7 +2,7 @@ package com.alibi.engine.score
 
 import com.alibi.engine.cases.ArrestState
 import com.alibi.engine.cases.CaseFile
-import com.alibi.engine.cases.SearchState
+import com.alibi.engine.cases.Investigation
 
 /** Today's result, like Wordle's: stars, time, mistakes and a spoiler-free share text. */
 data class ResultCard(
@@ -17,25 +17,24 @@ data class ResultCard(
 }
 
 /**
- * Three stars to start. Lose one for 4 or more mistakes (a hint counts as 2),
- * and one for a wrong arrest. If the culprit escapes, no stars.
+ * Three stars to start. Lose one for 3 or more mistakes, and one for a wrong arrest.
+ * If the culprit escapes, no stars.
  */
 object Scoring {
-    fun mistakes(examMistakes: Int, search: SearchState): Int =
-        examMistakes + search.wrongSearches + search.wrongAnswers
+    fun mistakes(examMistakes: Int, investigation: Investigation): Int = examMistakes + investigation.mistakes
 
     fun result(
         caseNumber: Int,
         file: CaseFile,
         seconds: Int,
         examMistakes: Int,
-        search: SearchState,
+        investigation: Investigation,
         arrest: ArrestState,
     ): ResultCard {
-        val mistakes = mistakes(examMistakes, search)
+        val mistakes = mistakes(examMistakes, investigation)
         val stars = when {
             !arrest.caught -> 0
-            else -> 3 - (if (mistakes + search.hintsUsed * 2 >= 4) 1 else 0) - (if (arrest.released.isNotEmpty()) 1 else 0)
+            else -> 3 - (if (mistakes >= 3) 1 else 0) - (if (arrest.released.isNotEmpty()) 1 else 0)
         }
         val title = when {
             !arrest.caught -> "The culprit got away"

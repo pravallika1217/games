@@ -87,7 +87,6 @@ fun QuestioningScreen(vm: GameViewModel) {
                         ) {
                             Text(s.emoji, fontSize = 44.sp, modifier = Modifier.graphicsLayer { translationX = if (lying) tremble * density else 0f })
                             Text(s.name, color = Noir.Text, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-                            Text("🧶".repeat(vm.search.strings[i]), fontSize = 11.sp)
                         }
                         if (lying) Text(
                             "LYING",
@@ -102,31 +101,16 @@ fun QuestioningScreen(vm: GameViewModel) {
             }
             if (sel != null) {
                 val s = file.suspects[sel]
-                Speech("${s.name} says", "\"${s.alibi}\"", highlight = false)
+                Speech("${s.name} says", "\"${s.interview!!.alibi}\"", highlight = false)
                 vm.lastReply?.let { Speech(if (it.bySuspect) s.name else "You", it.text, highlight = true) }
                 Text("SHOW EVIDENCE TO ${s.shortName.uppercase()}", color = Noir.Dim, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp)
-                file.clues.forEachIndexed { c, clue ->
+                file.leads.forEachIndexed { c, lead ->
                     val used = c in q.shown[sel]
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .graphicsLayer { alpha = if (used) 0.5f else 1f }
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Noir.PaperEdge)
-                            .padding(bottom = 3.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Noir.Paper)
-                            .clickable { vm.showClue(c) }
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Text(clue.emoji, fontSize = 26.sp)
-                        Column {
-                            Text("EVIDENCE", color = Noir.Ink.copy(alpha = 0.6f), fontFamily = Noir.Typewriter, fontSize = 11.sp, letterSpacing = 1.sp)
-                            Text(clue.card, color = Noir.Ink, fontSize = 14.sp)
-                        }
-                    }
+                    EvidenceCard(
+                        lead.emoji,
+                        lead.card,
+                        Modifier.graphicsLayer { alpha = if (used) 0.5f else 1f }.clip(RoundedCornerShape(10.dp)).clickable { vm.showEvidence(c) },
+                    )
                 }
             }
         }
@@ -194,12 +178,12 @@ fun VoteScreen(vm: GameViewModel) {
             ) {
                 Text(s.emoji, fontSize = 40.sp)
                 Column {
-                    Text("${s.name} ${"🧶".repeat(vm.search.strings[i])}", color = Noir.Text, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                    Text(s.name, color = Noir.Text, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                     Text(
                         when {
                             released -> "Innocent"
                             i in vm.questioning.lying -> "🔴 Caught lying"
-                            else -> "\"${s.alibi}\""
+                            else -> "\"${s.interview!!.alibi}\""
                         },
                         color = Noir.Dim,
                         fontSize = 13.sp,
@@ -216,7 +200,7 @@ fun RevealScreen(vm: GameViewModel) {
     val file = vm.file
     val who = vm.lastArrested ?: return
     val s = file.suspects[who]
-    val right = who == file.culprit
+    val right = who == file.culpritIndex
     val escaped = vm.arrest.escaped
     val drop = remember { Animatable(-160f) }
     val words = remember { Animatable(0f) }
@@ -251,7 +235,7 @@ fun RevealScreen(vm: GameViewModel) {
                 when {
                     right -> file.confession
                     escaped -> file.escapeStory
-                    else -> file.releaseLines[who] ?: ""
+                    else -> s.interview?.release ?: ""
                 },
                 color = Noir.Dim,
                 fontFamily = Noir.Typewriter,

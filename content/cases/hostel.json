@@ -1,0 +1,305 @@
+{
+  "id": "hostel",
+  "title": "The Hostel Midnight Heist",
+  "call": [
+    "Inspector {name}, tomorrow's exam paper was stolen from the boys' hostel.",
+    "The gate was locked all night. The thief is still inside."
+  ],
+  "arrival": "Sleepy students are standing in the corridor in their pyjamas.",
+  "briefing": [
+    {
+      "emoji": "📄",
+      "label": "Stolen",
+      "value": "The university exam paper"
+    },
+    {
+      "emoji": "🕐",
+      "label": "Time",
+      "value": "Around 1 AM"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "The warden's office"
+    },
+    {
+      "emoji": "❓",
+      "label": "How",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the cupboard",
+    "objectEmoji": "🗄️",
+    "spots": [
+      {
+        "title": "Lock",
+        "text": "Not broken. Not even scratched on the outside.",
+        "x": 0.5,
+        "y": 0.3
+      },
+      {
+        "title": "Shelf",
+        "text": "Only the exam paper is missing. The cash box wasn't touched.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Keyhole",
+        "text": "Fresh shiny scratches inside, like someone tried many keys.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "How did the thief open the cupboard?",
+    "options": [
+      "🔨 Broke the lock",
+      "🔑 Used a key",
+      "🪟 Came in through the window"
+    ],
+    "answer": 1,
+    "why": "The lock isn't broken, and the keyhole has fresh scratches. The thief had a key."
+  },
+  "people": [
+    {
+      "id": "ramu",
+      "name": "Night Guard Ramu",
+      "emoji": "👴",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "🔦",
+          "text": "Carries a torch"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Night shift"
+        }
+      ],
+      "interview": {
+        "says": "Main gate",
+        "alibi": "I was at the main gate all night, sahib. Nobody gets past Ramu!",
+        "replies": [
+          "Staff, yes, sahib. But I'm only a poor guard.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "Your belt has an empty torch clip, Ramu. Your torch was under the warden's desk!",
+          "The register says you walked through the garden at 1 AM, Ramu. You said you never left the gate!"
+        ]
+      }
+    },
+    {
+      "id": "sunil",
+      "name": "Electrician Sunil",
+      "emoji": "🧑‍🔧",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "🔦",
+          "text": "Carries a torch"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Night shift"
+        }
+      ],
+      "interview": {
+        "says": "Fuse room, block B",
+        "alibi": "A fuse blew in block B. I was fixing it all night.",
+        "replies": [
+          "I'm staff, but I only have the fuse-room key. Ask the warden.",
+          "My torch? It's right here on my belt. Look, it works.",
+          "Night shift, yes, but I was inside block B. Thirty boys watched me fix their lights."
+        ],
+        "release": "Thirty students in block B saw Sunil fixing the fuse all night."
+      }
+    },
+    {
+      "id": "lakshmi",
+      "name": "Cook Lakshmi",
+      "emoji": "👩‍🍳",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "📱",
+          "text": "Phone light"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Night shift"
+        }
+      ],
+      "interview": {
+        "says": "Kitchen",
+        "alibi": "I start breakfast at 3 AM. I was soaking rice for the idlis.",
+        "replies": [
+          "Staff, yes. But kitchen staff never get office keys.",
+          "A torch? I use my phone light, Inspector.",
+          "Night shift, yes. But I never leave my kitchen at night."
+        ],
+        "release": "The canteen boys say Lakshmi was in the kitchen from 3 AM."
+      }
+    },
+    {
+      "id": "rao",
+      "name": "Warden Rao",
+      "emoji": "👨‍🏫",
+      "group": "Staff",
+      "traits": [
+        {
+          "emoji": "🔦",
+          "text": "Carries a torch"
+        },
+        {
+          "emoji": "☀️",
+          "text": "Day shift"
+        }
+      ]
+    },
+    {
+      "id": "anu",
+      "name": "Topper Anu",
+      "emoji": "👩‍🎓",
+      "group": "Student",
+      "traits": [
+        {
+          "emoji": "📱",
+          "text": "Phone light"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Up all night"
+        }
+      ]
+    },
+    {
+      "id": "karthik",
+      "name": "Gym Bro Karthik",
+      "emoji": "💪",
+      "group": "Student",
+      "traits": [
+        {
+          "emoji": "🔦",
+          "text": "Carries a torch"
+        },
+        {
+          "emoji": "😴",
+          "text": "Sleeps early"
+        }
+      ]
+    },
+    {
+      "id": "rahul",
+      "name": "Gamer Rahul",
+      "emoji": "🎮",
+      "group": "Student",
+      "traits": [
+        {
+          "emoji": "📱",
+          "text": "Phone light"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Up all night"
+        }
+      ]
+    },
+    {
+      "id": "divya",
+      "name": "Fresher Divya",
+      "emoji": "🙋",
+      "group": "Student",
+      "traits": [
+        {
+          "emoji": "🔦",
+          "text": "Carries a torch"
+        },
+        {
+          "emoji": "😴",
+          "text": "Sleeps early"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "🗄️ Scratches inside the keyhole",
+      "question": "Someone tried many keys before the right one worked. What was the thief holding?",
+      "options": [
+        "🔑 One small key",
+        "⛓️ A big ring of keys",
+        "📎 A hairpin"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "With one key, you don't need many tries.",
+        null,
+        "A hairpin would scratch the outside too, and the outside is clean."
+      ],
+      "reveal": "A big ring of keys! You check the key board by the door…",
+      "emoji": "⛓️",
+      "name": "Empty key hook",
+      "found": "The hook for the **hostel key ring** is empty. The board says: **\"Keys for STAFF only.\"**",
+      "task": "cross",
+      "fact": "Staff",
+      "ask": "Cross out everyone who is NOT staff.",
+      "why": "Students can't take the key ring. Only staff can.",
+      "card": "The STAFF-only key ring is missing"
+    },
+    {
+      "from": "⛓️ The thief opened the cupboard in a dark office",
+      "question": "The office lights were never switched on. How did the thief see the paper?",
+      "options": [
+        "🕯️ A candle",
+        "🔦 A torch",
+        "🌕 Moonlight"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "A candle drips wax. There's no wax anywhere.",
+        null,
+        "It was a cloudy night. No moon."
+      ],
+      "reveal": "A torch! You look under the warden's desk…",
+      "emoji": "🔦",
+      "name": "Torch",
+      "found": "A heavy metal **torch** rolled under the desk. It's still switched on, and there's **wet grass** on it.",
+      "task": "mark",
+      "fact": "Carries a torch",
+      "ask": "Tap everyone left who carries a torch.",
+      "why": "Ramu, Sunil and Warden Rao all carry torches.",
+      "card": "A TORCH under the warden's desk"
+    },
+    {
+      "from": "🔦 Wet grass on the torch",
+      "question": "The corridors are dry. Where did the thief walk to get wet grass on the torch?",
+      "options": [
+        "📚 The library",
+        "🌿 The garden",
+        "🍳 The kitchen"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "The library has a carpet, not grass.",
+        null,
+        "The kitchen has a tiled floor."
+      ],
+      "reveal": "The garden! You check the night round register…",
+      "emoji": "📒",
+      "name": "Night round register",
+      "found": "Only the **NIGHT SHIFT** walks through the garden after 10 PM. The day staff go home at 8.",
+      "task": "cross",
+      "fact": "Night shift",
+      "ask": "Cross out everyone left who is NOT on the night shift.",
+      "why": "Warden Rao works days. He went home at 8.",
+      "card": "Only the NIGHT SHIFT walks the garden"
+    }
+  ],
+  "culprit": "ramu",
+  "confession": "\"My son is writing that exam tomorrow. I never had money for his tuition. I only wanted to help him.\"",
+  "escapeStory": "Ramu left before sunrise. Police found him in his village two days later, the paper still unopened."
+}

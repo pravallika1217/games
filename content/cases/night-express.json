@@ -1,0 +1,305 @@
+{
+  "id": "night-express",
+  "title": "Diamonds on the Night Express",
+  "call": [
+    "Inspector {name}, a merchant's diamonds were stolen on the Hyderabad–Chennai Express.",
+    "The train hasn't stopped since. The thief is still on board."
+  ],
+  "arrival": "Passengers are peeking out of their curtains. The merchant is crying.",
+  "briefing": [
+    {
+      "emoji": "💎",
+      "label": "Stolen",
+      "value": "A bag of diamonds, worth ₹5 crore"
+    },
+    {
+      "emoji": "🕒",
+      "label": "Time",
+      "value": "Around 3 AM"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "Coach S4"
+    },
+    {
+      "emoji": "❓",
+      "label": "How",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the merchant's bag",
+    "objectEmoji": "👜",
+    "spots": [
+      {
+        "title": "Zip",
+        "text": "The zip is still closed.",
+        "x": 0.5,
+        "y": 0.26
+      },
+      {
+        "title": "Side",
+        "text": "A long, neat cut along the side.",
+        "x": 0.28,
+        "y": 0.58
+      },
+      {
+        "title": "Inside",
+        "text": "Empty. Not one diamond left.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "How did the thief open the bag?",
+    "options": [
+      "🤏 Opened the zip",
+      "🔪 Cut it with a blade",
+      "🔐 Unlocked it"
+    ],
+    "answer": 1,
+    "why": "The zip is closed, but there's a neat cut. The thief used a blade."
+  },
+  "people": [
+    {
+      "id": "meera",
+      "name": "New Bride Meera",
+      "emoji": "👰",
+      "group": "Passenger",
+      "traits": [
+        {
+          "emoji": "✨",
+          "text": "Glittery clothes"
+        },
+        {
+          "emoji": "⬆️",
+          "text": "Upper berth"
+        }
+      ],
+      "interview": {
+        "says": "Upper berth",
+        "alibi": "I was fast asleep on my upper berth. I never woke up!",
+        "replies": [
+          "A knife? I'm a bride, I don't even cook.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "This gold glitter is from YOUR wedding saree, Meera!",
+          "Bangles don't rattle like stones, Meera!"
+        ]
+      }
+    },
+    {
+      "id": "ruby",
+      "name": "Dancer Ruby",
+      "emoji": "💃",
+      "group": "Passenger",
+      "traits": [
+        {
+          "emoji": "✨",
+          "text": "Glittery clothes"
+        },
+        {
+          "emoji": "⬆️",
+          "text": "Upper berth"
+        }
+      ],
+      "interview": {
+        "says": "Upper berth",
+        "alibi": "I was asleep after my show. Dancers sleep like the dead!",
+        "replies": [
+          "Yes, I'm a passenger. So are 70 other people in this coach!",
+          "My costume is in a sealed bag. Look, not one sparkle is missing.",
+          "My bag has only my costumes. Open it, I don't mind!"
+        ],
+        "release": "Ruby's costume bag was sealed by the theatre company. Not one sparkle was missing."
+      }
+    },
+    {
+      "id": "kabir",
+      "name": "Student Kabir",
+      "emoji": "🧑‍🎓",
+      "group": "Passenger",
+      "traits": [
+        {
+          "emoji": "👕",
+          "text": "Plain clothes"
+        },
+        {
+          "emoji": "⬆️",
+          "text": "Upper berth"
+        }
+      ],
+      "interview": {
+        "says": "Upper berth",
+        "alibi": "I was watching movies on my phone till 4 AM. With headphones!",
+        "replies": [
+          "I'm a passenger, sir, but I only carry a pencil, not a knife.",
+          "Glitter? I've worn this same T-shirt for three days, sir.",
+          "Check my phone. I never stopped watching."
+        ],
+        "release": "Kabir's phone shows he watched movies non-stop from 1 to 4 AM."
+      }
+    },
+    {
+      "id": "gupta",
+      "name": "Uncle Gupta",
+      "emoji": "👴",
+      "group": "Passenger",
+      "traits": [
+        {
+          "emoji": "👕",
+          "text": "Plain clothes"
+        },
+        {
+          "emoji": "⬇️",
+          "text": "Lower berth"
+        }
+      ]
+    },
+    {
+      "id": "sarla",
+      "name": "Aunty Sarla",
+      "emoji": "👵",
+      "group": "Passenger",
+      "traits": [
+        {
+          "emoji": "✨",
+          "text": "Glittery clothes"
+        },
+        {
+          "emoji": "⬇️",
+          "text": "Lower berth"
+        }
+      ]
+    },
+    {
+      "id": "tc",
+      "name": "Ticket Checker",
+      "emoji": "👨‍💼",
+      "group": "Railway staff",
+      "traits": [
+        {
+          "emoji": "👕",
+          "text": "Plain clothes"
+        },
+        {
+          "emoji": "🚶",
+          "text": "No berth"
+        }
+      ]
+    },
+    {
+      "id": "babu",
+      "name": "Chai Vendor Babu",
+      "emoji": "🧑‍🍳",
+      "group": "Railway staff",
+      "traits": [
+        {
+          "emoji": "👕",
+          "text": "Plain clothes"
+        },
+        {
+          "emoji": "🚶",
+          "text": "No berth"
+        }
+      ]
+    },
+    {
+      "id": "raju",
+      "name": "Cleaner Raju",
+      "emoji": "🧹",
+      "group": "Railway staff",
+      "traits": [
+        {
+          "emoji": "👕",
+          "text": "Plain clothes"
+        },
+        {
+          "emoji": "🚶",
+          "text": "No berth"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "👜 A long, neat cut in the bag",
+      "question": "The cut is long and very neat, made in one go. What made it?",
+      "options": [
+        "✂️ Big scissors",
+        "🔪 A small sharp knife",
+        "🦷 Teeth"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Scissors leave a zig-zag edge.",
+        null,
+        "Teeth? Inspector, please."
+      ],
+      "reveal": "A small sharp knife! You check the dustbin by the door…",
+      "emoji": "🔪",
+      "name": "Small knife",
+      "found": "A small knife, wrapped in a **PASSENGER ticket** for coach S4. Something gold sparkles on the handle.",
+      "task": "cross",
+      "fact": "Passenger",
+      "ask": "Cross out everyone who is NOT a passenger.",
+      "why": "Railway staff don't carry passenger tickets.",
+      "card": "A knife wrapped in a PASSENGER ticket"
+    },
+    {
+      "from": "🔪 Gold sparkles on the knife handle",
+      "question": "Tiny gold sparkles stuck on the handle. Where do they come from?",
+      "options": [
+        "🧂 Salt",
+        "✨ Glitter from fancy clothes",
+        "🧊 Ice"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Salt is white, not gold.",
+        null,
+        "Ice would have melted by now."
+      ],
+      "reveal": "Glitter! You follow the sparkles to the berth ladder…",
+      "emoji": "✨",
+      "name": "Glitter trail",
+      "found": "Gold **glitter** on every step of the ladder, going **up**.",
+      "task": "mark",
+      "fact": "Glittery clothes",
+      "ask": "Tap everyone left who wears glittery clothes.",
+      "why": "Meera, Ruby and Aunty Sarla all wear glittery clothes.",
+      "card": "GLITTER on the berth ladder"
+    },
+    {
+      "from": "✨ The glitter goes UP the ladder",
+      "question": "The glitter trail goes up the ladder and stops. Where did the thief hide the diamonds?",
+      "options": [
+        "⬇️ Under a lower berth",
+        "⬆️ On an upper berth",
+        "🚪 Out of the door"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "The trail goes up, not down.",
+        null,
+        "The door is locked. The train is moving fast."
+      ],
+      "reveal": "An upper berth! You climb up and check the bags…",
+      "emoji": "💍",
+      "name": "Rattling bangle box",
+      "found": "A **bangle box** that rattles like stones, hidden on an **upper berth**.",
+      "task": "cross",
+      "fact": "Upper berth",
+      "ask": "Cross out everyone left who is NOT on an upper berth.",
+      "why": "Uncle Gupta and Aunty Sarla sleep on lower berths.",
+      "card": "A rattling BANGLE BOX on an upper berth"
+    }
+  ],
+  "culprit": "meera",
+  "confession": "\"There was no wedding. My 'husband' is my partner. We do this on every train.\"",
+  "escapeStory": "Meera jumped off at the next station. She was caught selling a diamond the next day."
+}

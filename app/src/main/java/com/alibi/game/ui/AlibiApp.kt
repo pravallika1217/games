@@ -55,7 +55,8 @@ fun AlibiApp(vm: GameViewModel = viewModel()) {
             Screen.Call -> CallScreen(vm)
             Screen.Arrival -> ArrivalScreen(vm)
             Screen.Examine -> ExamineScreen(vm)
-            Screen.Search -> SearchScreen(vm)
+            Screen.People -> PeopleScreen(vm)
+            Screen.Leads -> LeadsScreen(vm)
             Screen.Questioning -> QuestioningScreen(vm)
             Screen.Vote -> VoteScreen(vm)
             Screen.Reveal -> RevealScreen(vm)
@@ -65,7 +66,7 @@ fun AlibiApp(vm: GameViewModel = viewModel()) {
 }
 
 /** The 5 parts of a case, shown as a progress bar at the top. */
-private val STEPS = listOf("Arrival", "Examine", "Search", "Questioning", "Arrest")
+private val STEPS = listOf("Arrival", "Examine", "Clues", "Questioning", "Arrest")
 
 /**
  * Every case screen has the same shape: progress at the top, the scene in the middle,

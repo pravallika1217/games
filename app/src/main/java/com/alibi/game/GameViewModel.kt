@@ -6,30 +6,36 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.alibi.engine.cases.ArrestState
 import com.alibi.engine.cases.CaseFile
-import com.alibi.engine.cases.CaseLibrary
+import com.alibi.engine.cases.Investigation
+import com.alibi.engine.cases.Person
 import com.alibi.engine.cases.PlayableCase
 import com.alibi.engine.cases.Questioning
 import com.alibi.engine.cases.Reply
-import com.alibi.engine.cases.SearchResult
-import com.alibi.engine.cases.SearchState
 import com.alibi.engine.score.CareerRank
 import com.alibi.engine.score.ResultCard
 import com.alibi.engine.score.Scoring
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-enum class Screen { Name, Home, Call, Arrival, Examine, Search, Questioning, Vote, Reveal, Result }
+enum class Screen { Name, Home, Call, Arrival, Examine, People, Leads, Questioning, Vote, Reveal, Result }
 
 /** Right / wrong answer bar at the bottom of the screen, like Duolingo. */
 enum class Feedback { RIGHT, WRONG }
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val store = ProgressStore(application)
+    private val cases = CaseRepository(application)
     val sfx = Sfx(application).apply { enabled = store.soundOn }
     private val today = LocalDate.now().toEpochDay()
 
-    val case: PlayableCase = CaseLibrary.forDay(today)
+    /** Today's case. Starts with what's on the phone, and may update once the newest one downloads. */
+    var case: PlayableCase by mutableStateOf(cases.caseFor(today))
+        private set
     val file: CaseFile get() = case.file
 
     var name by mutableStateOf(store.name)
@@ -58,26 +64,21 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         private set
     private var examMistakes = 0
 
-    // ---- Search ----
-    var search by mutableStateOf(SearchState(file))
+    // ---- Leads ----
+    var investigation by mutableStateOf(Investigation(file))
         private set
-    /** What the last search found, shown above the room. */
-    var searchMessage by mutableStateOf<String?>(null)
+    /** The lead whose clue card is open, or null. */
+    var cardLead by mutableStateOf<Int?>(null)
         private set
-    var searchMessageTick by mutableIntStateOf(0)
+    /** Who was still in when the card opened: the people listed on it. */
+    var cardPeople by mutableStateOf<List<Person>>(emptyList())
         private set
-    /** The place Pandu points at after a hint. */
-    var hinted by mutableStateOf<String?>(null)
+    var picks by mutableStateOf<Set<String>>(emptySet())
         private set
-    /** The clue card open right now ("CLUE FOUND… who does this point to?"). */
-    var openClue by mutableStateOf<Int?>(null)
+    var pickFeedback by mutableStateOf<Feedback?>(null)
         private set
-    var clueRuledOut by mutableStateOf<Set<Int>>(emptySet())
-        private set
-    var clueSolved by mutableStateOf(false)
-        private set
-    /** Suspects who just got a new red string, to make their card glow. */
-    var newString by mutableStateOf<Int?>(null)
+    /** The last wrong answer to the current lead's question, to say why it's wrong. */
+    var lastWrongOption by mutableStateOf<Int?>(null)
         private set
 
     // ---- Questioning ----
@@ -101,6 +102,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     var result by mutableStateOf<ResultCard?>(null)
         private set
     private var startedAt = 0L
+
+    init {
+        viewModelScope.launch {
+            val changed = withContext(Dispatchers.IO) { runCatching { cases.refresh(today) }.getOrDefault(false) }
+            // Only swap the case before the player has started it.
+            if (changed && screen in setOf(Screen.Name, Screen.Home)) case = cases.caseFor(today)
+        }
+    }
 
     fun toggleSound() {
         soundOn = !soundOn
@@ -129,8 +138,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     /** Starts today's case from the phone call (or a practice replay if it's already done). */
     fun play() {
         seenSpots = emptySet(); examPick = null; examRuledOut = emptySet(); examFeedback = null; examMistakes = 0
-        search = SearchState(file); searchMessage = null; hinted = null; openClue = null; clueRuledOut = emptySet()
-        clueSolved = false; newString = null
+        investigation = Investigation(file); cardLead = null; cardPeople = emptyList(); picks = emptySet(); pickFeedback = null; lastWrongOption = null
         questioning = Questioning(file); selected = null; lastReply = null
         arrest = ArrestState(file); votePick = null; lastArrested = null
         result = null
@@ -191,58 +199,64 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         examFeedback = null
     }
 
-    fun startSearch() {
-        screen = Screen.Search
+    fun meetPeople() {
+        sfx.pin()
+        screen = Screen.People
     }
 
-    // ---- Search ----
+    fun startLeads() {
+        sfx.pin()
+        screen = Screen.Leads
+    }
 
-    fun searchAt(id: String) {
-        if (openClue != null) return
-        val (next, res) = search.search(id)
-        search = next
-        when (res) {
-            is SearchResult.Found -> {
-                sfx.found()
-                openClue = res.clue
-                clueRuledOut = emptySet()
-                clueSolved = false
-                hinted = null
-            }
-            is SearchResult.Nothing -> {
-                sfx.snap()
-                searchMessage = res.text
-                searchMessageTick++
-            }
-            SearchResult.Ignored -> Unit
+    // ---- Leads ----
+
+    /** Answers the current lead's question. A wrong answer is a mistake; the right one reveals the clue. */
+    fun answerLead(option: Int) {
+        val (next, right) = investigation.guess(option)
+        if (next == investigation) return
+        investigation = next
+        if (right) sfx.success() else {
+            lastWrongOption = option
+            sfx.snap()
         }
     }
 
-    fun askPandu() {
-        val (next, place) = search.hint() ?: return
-        search = next
-        hinted = place
+    /** Called a moment after the right answer, so the player can read the reveal line first. */
+    fun openClueCard() {
+        val lead = investigation.current ?: return
+        if (!investigation.clueOpen || cardLead != null) return
+        cardLead = lead
+        cardPeople = investigation.stillIn
+        picks = emptySet()
+        pickFeedback = null
+        sfx.found()
     }
 
-    fun answerClue(suspect: Int) {
-        val clue = openClue ?: return
-        if (clueSolved || suspect in clueRuledOut) return
-        val (next, right) = search.answer(clue, suspect)
-        search = next
+    fun togglePick(id: String) {
+        if (pickFeedback == Feedback.RIGHT) return
+        picks = if (id in picks) picks - id else picks + id
+        if (pickFeedback == Feedback.WRONG) pickFeedback = null
+        sfx.pin()
+    }
+
+    fun checkPicks() {
+        val (next, right) = investigation.pick(picks)
+        investigation = next
         if (right) {
-            clueSolved = true
-            newString = suspect
+            pickFeedback = Feedback.RIGHT
             sfx.success()
         } else {
-            clueRuledOut = clueRuledOut + suspect
+            pickFeedback = Feedback.WRONG
             sfx.snap()
         }
     }
 
     fun bagClue() {
-        openClue = null
-        clueSolved = false
-        searchMessage = null
+        cardLead = null
+        lastWrongOption = null
+        picks = emptySet()
+        pickFeedback = null
         sfx.pin()
     }
 
@@ -258,9 +272,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         sfx.pin()
     }
 
-    fun showClue(clue: Int) {
+    fun showEvidence(lead: Int) {
         val suspect = selected ?: return
-        val (next, reply) = questioning.show(suspect, clue)
+        val (next, reply) = questioning.show(suspect, lead)
         questioning = next
         lastReply = reply
         if (!reply.bySuspect) {
@@ -301,7 +315,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun finish() {
         val seconds = ((System.currentTimeMillis() - startedAt) / 1000L).toInt()
-        val card = Scoring.result(case.number, file, seconds, examMistakes, search, arrest)
+        val card = Scoring.result(case.number, file, seconds, examMistakes, investigation, arrest)
         result = card
         if (todaysResult == null) {
             store.saveFinished(today, card)
