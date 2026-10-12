@@ -6,3 +6,8 @@ local.properties
 .kotlin/
 captures/
 .DS_Store
+
+# Signing: the upload key and its passwords never go to GitHub.
+keystore.properties
+*.jks
+*.keystore

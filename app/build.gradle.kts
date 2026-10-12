@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -25,9 +27,24 @@ android {
     // The same case files that get published are shipped inside the app, for offline play.
     sourceSets["main"].assets.srcDir(rootProject.file("content"))
 
+    // Release builds are signed with your upload key, if keystore.properties exists (see README).
+    // That file and the key are never committed: they stay only on your computer.
+    val keystore = Properties().apply {
+        rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+    }
+    signingConfigs {
+        if (!keystore.isEmpty) create("release") {
+            storeFile = file(keystore.getProperty("storeFile"))
+            storePassword = keystore.getProperty("storePassword")
+            keyAlias = keystore.getProperty("keyAlias")
+            keyPassword = keystore.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (!keystore.isEmpty) signingConfig = signingConfigs.getByName("release")
         }
     }
 

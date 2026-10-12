@@ -91,8 +91,26 @@ Ready in the project:
 - App icon (adaptive, plus older-phone PNGs), and `store/icon-512.png` for the Play listing.
 - Targets Android 16 (API 36).
 
-Before each upload, add 1 to `versionCode` in `app/build.gradle.kts`. Build the upload file
-with **Build → Generate Signed App Bundle**, and back up the key file it creates.
+**Signing (one time).** Create your upload key, outside the project folder:
+
+```
+keytool -genkeypair -v -keystore ~/alibi-upload-key.jks -alias alibi -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Then create `keystore.properties` in the project folder (it's ignored by git, so it stays on your
+computer):
+
+```
+storeFile=/Users/YOU/alibi-upload-key.jks
+storePassword=the password you chose
+keyAlias=alibi
+keyPassword=the password you chose
+```
+
+Back up the `.jks` file and the passwords. Without them you can never update the app.
+
+**Each upload:** add 1 to `versionCode` in `app/build.gradle.kts`, then run
+`./gradlew bundleRelease`. The signed file is `app/build/outputs/bundle/release/app-release.aab`.
 
 ## Scoring
 
