@@ -1,0 +1,305 @@
+{
+  "id": "cooking-final",
+  "title": "Poison at the Cooking Final",
+  "call": [
+    "Inspector {name}, a judge collapsed during the live final of 'India's Top Cook'.",
+    "Millions watched him take one bite and fall. The studio is locked."
+  ],
+  "arrival": "The cameras are still rolling. The contestants stand frozen at their stations.",
+  "briefing": [
+    {
+      "emoji": "🧑‍🍳",
+      "label": "Victim",
+      "value": "Judge Chef Kapoor. Alive, in hospital."
+    },
+    {
+      "emoji": "📺",
+      "label": "Time",
+      "value": "During the live final"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "The studio kitchen"
+    },
+    {
+      "emoji": "❓",
+      "label": "Cause",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the judge's plate",
+    "objectEmoji": "🍛",
+    "spots": [
+      {
+        "title": "Plate",
+        "text": "Biryani. Only one spoonful eaten.",
+        "x": 0.5,
+        "y": 0.26
+      },
+      {
+        "title": "Spoon",
+        "text": "Tiny white crystals on the spoon. Not salt, not sugar.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Smell",
+        "text": "It smells of bitter almonds. Biryani should never smell like that.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "What made the judge collapse?",
+    "options": [
+      "🌶️ Too much chilli",
+      "🥵 The hot studio lights",
+      "🧪 Poison in the food"
+    ],
+    "answer": 2,
+    "why": "Strange white crystals and a bitter almond smell, after one bite. That's poison."
+  },
+  "people": [
+    {
+      "id": "meenakshi",
+      "name": "Contestant Meenakshi",
+      "emoji": "👩‍🍳",
+      "group": "Contestant",
+      "traits": [
+        {
+          "emoji": "🔵",
+          "text": "Blue apron"
+        },
+        {
+          "emoji": "🪟",
+          "text": "Window side"
+        }
+      ],
+      "interview": {
+        "says": "Station 2",
+        "alibi": "I was plating my dessert at station 2 the whole time.",
+        "replies": [
+          "Yes, I'm a contestant. All four of us took plates to the judge.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "This blue thread matches the torn corner of YOUR apron, Meenakshi!",
+          "The bottle was in the bin right next to YOUR station, Meenakshi!"
+        ]
+      }
+    },
+    {
+      "id": "bunty",
+      "name": "Contestant Bunty",
+      "emoji": "👨‍🍳",
+      "group": "Contestant",
+      "traits": [
+        {
+          "emoji": "🔵",
+          "text": "Blue apron"
+        },
+        {
+          "emoji": "🪟",
+          "text": "Window side"
+        }
+      ],
+      "interview": {
+        "says": "Station 3",
+        "alibi": "I was frying pakoras. Hot oil, you can't leave it for a second!",
+        "replies": [
+          "Contestant, yes. I took my pakoras to the judge first.",
+          "Blue apron, yes, but look, mine isn't torn anywhere.",
+          "My station is by the window, but I never left my pan. The camera was on me."
+        ],
+        "release": "The camera filmed Bunty frying pakoras without a break."
+      }
+    },
+    {
+      "id": "sushila",
+      "name": "Contestant Sushila",
+      "emoji": "👵",
+      "group": "Contestant",
+      "traits": [
+        {
+          "emoji": "🔴",
+          "text": "Red apron"
+        },
+        {
+          "emoji": "🪟",
+          "text": "Window side"
+        }
+      ],
+      "interview": {
+        "says": "Station 1",
+        "alibi": "I was grinding chutney on my stone, beta. My arms still hurt!",
+        "replies": [
+          "A contestant at 72 years old, yes!",
+          "Blue? My apron is red, beta. My lucky colour.",
+          "Window side, yes. But I can't even open those tiny bottles. Look at my hands."
+        ],
+        "release": "The sound engineer heard Sushila's grinding stone for the whole round."
+      }
+    },
+    {
+      "id": "rohan",
+      "name": "Contestant Rohan",
+      "emoji": "🧒",
+      "group": "Contestant",
+      "traits": [
+        {
+          "emoji": "🔵",
+          "text": "Blue apron"
+        },
+        {
+          "emoji": "🚪",
+          "text": "Door side"
+        }
+      ]
+    },
+    {
+      "id": "rhea",
+      "name": "Host Rhea",
+      "emoji": "🎤",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "👗",
+          "text": "No apron"
+        },
+        {
+          "emoji": "🚪",
+          "text": "Door side"
+        }
+      ]
+    },
+    {
+      "id": "stylist",
+      "name": "Food Stylist Kim",
+      "emoji": "🧑‍🎨",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "🔵",
+          "text": "Blue apron"
+        },
+        {
+          "emoji": "🪟",
+          "text": "Window side"
+        }
+      ]
+    },
+    {
+      "id": "cameraman",
+      "name": "Cameraman Ravi",
+      "emoji": "🎥",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "👗",
+          "text": "No apron"
+        },
+        {
+          "emoji": "🚪",
+          "text": "Door side"
+        }
+      ]
+    },
+    {
+      "id": "mehra",
+      "name": "Judge Chef Mehra",
+      "emoji": "🧔",
+      "group": "Judge",
+      "traits": [
+        {
+          "emoji": "⚪",
+          "text": "White chef coat"
+        },
+        {
+          "emoji": "🪟",
+          "text": "Window side"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "🥄 Crystals on the spoon, but not in the pot",
+      "question": "The rest of the biryani in the pot is fine. When was the poison added?",
+      "options": [
+        "🛒 At the market",
+        "🥄 After serving, on the judge's plate",
+        "🍲 While cooking the whole pot"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Then every plate would be poisoned.",
+        null,
+        "Then the whole pot would be poisoned too."
+      ],
+      "reveal": "After serving! You check the judges' tasting table…",
+      "emoji": "🍽️",
+      "name": "Tasting table",
+      "found": "The tasting table is behind a rope. Only **CONTESTANTS** carry plates up to it. There's a **blue thread** caught on its corner.",
+      "task": "cross",
+      "fact": "Contestant",
+      "ask": "Cross out everyone who is NOT a contestant.",
+      "why": "Only contestants went up to the tasting table.",
+      "card": "Only CONTESTANTS reach the tasting table"
+    },
+    {
+      "from": "🧵 A blue thread on the table's corner",
+      "question": "The thread is caught at waist height, as someone leaned over the plate. What did it come from?",
+      "options": [
+        "🧢 A cap",
+        "👟 A shoe",
+        "🧑‍🍳 An apron"
+      ],
+      "answer": 2,
+      "wrongWhy": [
+        "A cap isn't at waist height.",
+        "Shoes don't reach the table top.",
+        null
+      ],
+      "reveal": "An apron! Pandu holds the thread up to the light…",
+      "emoji": "🧵",
+      "name": "Apron thread",
+      "found": "A thread of **BLUE apron** fabric, torn as someone leaned over the judge's plate.",
+      "task": "mark",
+      "fact": "Blue apron",
+      "ask": "Tap everyone left who wears a blue apron.",
+      "why": "Meenakshi, Bunty and Rohan all wear blue aprons.",
+      "card": "A BLUE APRON thread at the tasting table"
+    },
+    {
+      "from": "🧪 The poison came in something small",
+      "question": "The thief had to get rid of the poison bottle fast, before the cameras turned. Where?",
+      "options": [
+        "🗑️ In the nearest bin",
+        "🍲 Inside the biryani pot",
+        "🎒 Took it home"
+      ],
+      "answer": 0,
+      "wrongWhy": [
+        null,
+        "Then the whole pot would be poisoned.",
+        "The studio was locked. Nobody went home."
+      ],
+      "reveal": "The nearest bin! You search the bins by the stations…",
+      "emoji": "🧴",
+      "name": "Tiny bottle",
+      "found": "A tiny bottle that smells of bitter almonds, in the bin of the **WINDOW SIDE** stations.",
+      "task": "cross",
+      "fact": "Window side",
+      "ask": "Cross out everyone left who does NOT cook on the window side.",
+      "why": "Rohan's station is on the door side.",
+      "card": "The poison bottle in a WINDOW SIDE bin"
+    }
+  ],
+  "culprit": "meenakshi",
+  "confession": "\"Twenty years ago he stole my mother's biryani recipe and got famous with it. Tonight he tasted it one more time.\"",
+  "escapeStory": "Meenakshi walked out with the studio audience. She was caught at the bus stand, still wearing her apron."
+}

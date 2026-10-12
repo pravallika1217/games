@@ -1,0 +1,305 @@
+{
+  "id": "gully-cup",
+  "title": "The Gully Cup Robbery",
+  "call": [
+    "Inspector {name}, the Gully Cup trophy has vanished from the cricket pavilion.",
+    "The final is tied, the rain has stopped, and there's nothing to give the winners!"
+  ],
+  "arrival": "Wet players stand in the outfield, staring at an empty trophy case.",
+  "briefing": [
+    {
+      "emoji": "🏆",
+      "label": "Stolen",
+      "value": "The gold-plated Gully Cup trophy"
+    },
+    {
+      "emoji": "🕓",
+      "label": "Time",
+      "value": "Sometime this afternoon"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "The cricket pavilion"
+    },
+    {
+      "emoji": "❓",
+      "label": "When",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the trophy case",
+    "objectEmoji": "🪟",
+    "spots": [
+      {
+        "title": "Shelf",
+        "text": "A clean circle in the dust, where the trophy stood.",
+        "x": 0.5,
+        "y": 0.28
+      },
+      {
+        "title": "Glass door",
+        "text": "Fresh rain drops on the INSIDE of the glass.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Wall clock",
+        "text": "Stopped at 4:15, when the storm cut the power.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "When was the trophy taken?",
+    "options": [
+      "☀️ Before the match started",
+      "🌧️ In the rain break, during the power cut",
+      "🏁 After the last ball"
+    ],
+    "answer": 1,
+    "why": "Rain inside the glass and a clock stopped at 4:15: someone opened the case in the dark, during the rain break."
+  },
+  "people": [
+    {
+      "id": "rohit",
+      "name": "Captain Rohit",
+      "emoji": "🏏",
+      "group": "Red Caps",
+      "traits": [
+        {
+          "emoji": "👟",
+          "text": "Spiked shoes"
+        },
+        {
+          "emoji": "✋",
+          "text": "Right-handed"
+        }
+      ],
+      "interview": {
+        "says": "Dressing room",
+        "alibi": "I was giving my team a talk in the dressing room. They all heard me shouting!",
+        "replies": [
+          "Of course I wear spikes, I'm the captain. Every player does.",
+          "I'm right-handed. Look at my batting gloves.",
+          "Red cap, yes. But why would I steal my own team's trophy?"
+        ],
+        "release": "The whole Red Caps team heard Rohit's team talk during the power cut."
+      }
+    },
+    {
+      "id": "dev",
+      "name": "Bowler Dev",
+      "emoji": "🧔",
+      "group": "Red Caps",
+      "traits": [
+        {
+          "emoji": "👟",
+          "text": "Spiked shoes"
+        },
+        {
+          "emoji": "🤚",
+          "text": "Left-handed"
+        }
+      ],
+      "interview": {
+        "says": "Canteen",
+        "alibi": "I was in the canteen eating samosas, waiting for the rain to stop.",
+        "replies": [
+          "Spikes? Every player wears spikes, Inspector.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "You bowl with your LEFT hand, Dev. And this is a left handprint, right next to the latch!",
+          "This is YOUR cap, Dev, number 11. Your teammates are all wearing theirs!"
+        ]
+      }
+    },
+    {
+      "id": "salman",
+      "name": "Keeper Salman",
+      "emoji": "🧤",
+      "group": "Red Caps",
+      "traits": [
+        {
+          "emoji": "👟",
+          "text": "Spiked shoes"
+        },
+        {
+          "emoji": "🤚",
+          "text": "Left-handed"
+        }
+      ],
+      "interview": {
+        "says": "On the pitch",
+        "alibi": "I was helping the groundsmen cover the pitch. I'm still soaked!",
+        "replies": [
+          "Spikes, yes. All the players wear them.",
+          "Left-handed, yes. But my hands were inside wet keeping gloves all evening.",
+          "My cap? It's right here on my head, dripping."
+        ],
+        "release": "The groundsmen say Salman helped them cover the pitch for the whole break."
+      }
+    },
+    {
+      "id": "kiran",
+      "name": "Opener Kiran",
+      "emoji": "🧑",
+      "group": "Blue Caps",
+      "traits": [
+        {
+          "emoji": "👟",
+          "text": "Spiked shoes"
+        },
+        {
+          "emoji": "🤚",
+          "text": "Left-handed"
+        }
+      ]
+    },
+    {
+      "id": "joseph",
+      "name": "Spinner Joseph",
+      "emoji": "🧑‍🦱",
+      "group": "Blue Caps",
+      "traits": [
+        {
+          "emoji": "👟",
+          "text": "Spiked shoes"
+        },
+        {
+          "emoji": "✋",
+          "text": "Right-handed"
+        }
+      ]
+    },
+    {
+      "id": "umpire",
+      "name": "Umpire Shastri",
+      "emoji": "🧑‍⚖️",
+      "group": "Officials",
+      "traits": [
+        {
+          "emoji": "👞",
+          "text": "Leather shoes"
+        },
+        {
+          "emoji": "✋",
+          "text": "Right-handed"
+        }
+      ]
+    },
+    {
+      "id": "meena",
+      "name": "Scorer Meena",
+      "emoji": "📝",
+      "group": "Officials",
+      "traits": [
+        {
+          "emoji": "🩴",
+          "text": "Chappals"
+        },
+        {
+          "emoji": "🤚",
+          "text": "Left-handed"
+        }
+      ]
+    },
+    {
+      "id": "bunty",
+      "name": "Commentator Bunty",
+      "emoji": "🎙️",
+      "group": "Officials",
+      "traits": [
+        {
+          "emoji": "🥾",
+          "text": "Sneakers"
+        },
+        {
+          "emoji": "✋",
+          "text": "Right-handed"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "🌧️ Rain drops inside the glass",
+      "question": "The thief came in from the soaked ground. What would they leave on the pavilion's wooden floor?",
+      "options": [
+        "👣 Muddy shoe prints",
+        "🧤 Wet gloves",
+        "☂️ A dripping umbrella"
+      ],
+      "answer": 0,
+      "wrongWhy": [
+        null,
+        "Gloves don't touch the floor. Look down!",
+        "Nobody had an umbrella. The storm came suddenly."
+      ],
+      "reveal": "Shoe prints! Pandu shines his torch along the floor…",
+      "emoji": "👣",
+      "name": "Spike prints",
+      "found": "Muddy prints from the door to the case, full of **tiny holes**. Those are **SPIKED cricket shoes**.",
+      "task": "cross",
+      "fact": "Spiked shoes",
+      "ask": "Cross out everyone who does NOT wear spiked shoes.",
+      "why": "Only the players wore spikes today.",
+      "card": "SPIKE prints going to the trophy case"
+    },
+    {
+      "from": "👣 The spike prints stop right at the glass door",
+      "question": "The thief had to pull open the stiff glass door. What would that leave behind?",
+      "options": [
+        "🔑 A key in the lock",
+        "🧂 A pinch of salt",
+        "🖐️ A handprint on the glass"
+      ],
+      "answer": 2,
+      "wrongWhy": [
+        "The lock wasn't used. The door just pulls open.",
+        "Salt? Focus, Inspector!",
+        null
+      ],
+      "reveal": "A handprint! Pandu dusts the glass…",
+      "emoji": "🖐️",
+      "name": "Handprint",
+      "found": "A clear **LEFT** handprint next to the latch. The thief yanked the stiff door with their strong hand. A **red thread** is caught on the latch.",
+      "task": "mark",
+      "fact": "Left-handed",
+      "ask": "Tap everyone left who is left-handed.",
+      "why": "Dev, Salman and Kiran are all left-handed. Keep an eye on them.",
+      "card": "A LEFT handprint on the glass"
+    },
+    {
+      "from": "🧵 A red thread caught on the latch, at head height",
+      "question": "The thread is red and woolly, caught as the thief leaned in. What was it from?",
+      "options": [
+        "🧣 A red scarf",
+        "🧢 A red team cap",
+        "🪢 A red rope"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Nobody wore a scarf. It's summer!",
+        null,
+        "There's no rope in the pavilion."
+      ],
+      "reveal": "A cap! You look under the bench…",
+      "emoji": "🧢",
+      "name": "Lost cap",
+      "found": "A **RED CAPS** team cap with a torn thread, dropped in the dark. Every Blue Caps player still has theirs.",
+      "task": "cross",
+      "fact": "Red Caps",
+      "ask": "Cross out everyone left who is NOT in the Red Caps team.",
+      "why": "Kiran plays for the Blue Caps.",
+      "card": "A RED CAPS cap under the bench"
+    }
+  ],
+  "culprit": "dev",
+  "confession": "\"I owed the bookies two lakh rupees. That trophy is real gold plating. I thought nobody would notice in the dark.\"",
+  "escapeStory": "Dev slipped out through the parking lot. Police found the trophy at a pawn shop the next morning, with his name on the receipt."
+}

@@ -1,0 +1,305 @@
+{
+  "id": "film-set",
+  "title": "The Stunt That Went Wrong",
+  "call": [
+    "Inspector {name}, a stunt rope snapped on the set of the film 'Tiger Returns'.",
+    "The hero is in hospital. The director says it was no accident."
+  ],
+  "arrival": "Lights, cameras and sixty crew members, all frozen. Nobody is shooting today.",
+  "briefing": [
+    {
+      "emoji": "🎬",
+      "label": "Victim",
+      "value": "Action hero Vikrant. Alive, with a broken leg."
+    },
+    {
+      "emoji": "🕘",
+      "label": "Time",
+      "value": "Around 9 AM, during the big stunt"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "Studio 4"
+    },
+    {
+      "emoji": "❓",
+      "label": "Cause",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the stunt rope",
+    "objectEmoji": "🪢",
+    "spots": [
+      {
+        "title": "Top end",
+        "text": "Tied tightly to the beam. The knot is perfect.",
+        "x": 0.5,
+        "y": 0.26
+      },
+      {
+        "title": "Middle",
+        "text": "Half of the rope is cut neat and straight. The other half is torn.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Harness",
+        "text": "The harness clip is fine. Not broken.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "Why did the rope snap?",
+    "options": [
+      "✂️ Someone cut it halfway",
+      "🪢 It was old and weak",
+      "🔥 A hot light burnt it"
+    ],
+    "answer": 0,
+    "why": "A neat cut halfway, then torn: someone cut it so it would hold for a moment, then snap in the middle of the stunt."
+  },
+  "people": [
+    {
+      "id": "rani",
+      "name": "Makeup Artist Rani",
+      "emoji": "💄",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "💄",
+          "text": "Makeup on hands"
+        },
+        {
+          "emoji": "🔦",
+          "text": "Headlamp"
+        }
+      ],
+      "interview": {
+        "says": "Makeup van",
+        "alibi": "I was in the makeup van, fixing the heroine's face all morning!",
+        "replies": [
+          "Crew, yes. So are sixty other people on this set.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "This is your makeup powder on the ladder, Rani. The heroine says you left the van for twenty minutes!",
+          "Your headlamp is missing from your kit, Rani. It was up on the stunt beam!"
+        ]
+      }
+    },
+    {
+      "id": "tony",
+      "name": "Hairstylist Tony",
+      "emoji": "💇",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "💄",
+          "text": "Makeup on hands"
+        },
+        {
+          "emoji": "🔦",
+          "text": "Headlamp"
+        }
+      ],
+      "interview": {
+        "says": "Hair tent",
+        "alibi": "I was curling the villain's hair. That takes a full hour, darling!",
+        "replies": [
+          "Crew, darling, of course.",
+          "Powder on my hands, yes. But I never left the hair tent. Prakash was in my chair the whole time!",
+          "My headlamp is right here in my bag. Look, the batteries are still sealed."
+        ],
+        "release": "Villain actor Prakash was in Tony's chair for the whole hour."
+      }
+    },
+    {
+      "id": "chotu",
+      "name": "Spot Boy Chotu",
+      "emoji": "🧢",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "🖐️",
+          "text": "Clean hands"
+        },
+        {
+          "emoji": "🔦",
+          "text": "Headlamp"
+        }
+      ],
+      "interview": {
+        "says": "Tea stall",
+        "alibi": "I was making chai for sixty people, sir. Ask anyone!",
+        "replies": [
+          "Crew, sir. I'm the spot boy.",
+          "Makeup? My hands smell of ginger and tea, sir!",
+          "My headlamp is on my head, sir. I wear it in the dark storeroom."
+        ],
+        "release": "Sixty crew members got their chai from Chotu, one by one."
+      }
+    },
+    {
+      "id": "jojo",
+      "name": "Cameraman Jojo",
+      "emoji": "🎥",
+      "group": "Crew",
+      "traits": [
+        {
+          "emoji": "🧤",
+          "text": "Wears gloves"
+        },
+        {
+          "emoji": "📱",
+          "text": "Phone torch"
+        }
+      ]
+    },
+    {
+      "id": "simran",
+      "name": "Heroine Simran",
+      "emoji": "💃",
+      "group": "Cast",
+      "traits": [
+        {
+          "emoji": "💄",
+          "text": "Makeup on hands"
+        },
+        {
+          "emoji": "📱",
+          "text": "Phone torch"
+        }
+      ]
+    },
+    {
+      "id": "prakash",
+      "name": "Villain Prakash",
+      "emoji": "😈",
+      "group": "Cast",
+      "traits": [
+        {
+          "emoji": "🖐️",
+          "text": "Clean hands"
+        },
+        {
+          "emoji": "🔦",
+          "text": "Headlamp"
+        }
+      ]
+    },
+    {
+      "id": "kapoor",
+      "name": "Producer Kapoor",
+      "emoji": "🤵",
+      "group": "Visitor",
+      "traits": [
+        {
+          "emoji": "🖐️",
+          "text": "Clean hands"
+        },
+        {
+          "emoji": "📱",
+          "text": "Phone torch"
+        }
+      ]
+    },
+    {
+      "id": "pinky",
+      "name": "Fan Club Pinky",
+      "emoji": "🤳",
+      "group": "Visitor",
+      "traits": [
+        {
+          "emoji": "💄",
+          "text": "Makeup on hands"
+        },
+        {
+          "emoji": "📱",
+          "text": "Phone torch"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "✂️ A neat, straight cut in the rope",
+      "question": "The cut is perfectly straight and clean. What made it?",
+      "options": [
+        "🐀 A rat chewing it",
+        "✂️ Sharp scissors",
+        "🔥 A hot light"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Rat bites are messy and chewed, not straight.",
+        null,
+        "Heat would leave a black, melted end."
+      ],
+      "reveal": "Scissors! You check the costume table…",
+      "emoji": "✂️",
+      "name": "Costume scissors",
+      "found": "**Costume scissors** with rope threads on the blades, and beige powder on the handles. Only the **CREW** can go behind the costume table.",
+      "task": "cross",
+      "fact": "Crew",
+      "ask": "Cross out everyone who is NOT crew.",
+      "why": "Cast and visitors aren't allowed behind the costume table.",
+      "card": "Rope threads on CREW-only scissors"
+    },
+    {
+      "from": "✂️ Beige powder on the scissor handles",
+      "question": "The powder is soft, beige, and smells like face cream. What is it?",
+      "options": [
+        "💄 Makeup powder",
+        "🍞 Flour",
+        "🧱 Cement dust"
+      ],
+      "answer": 0,
+      "wrongWhy": [
+        null,
+        "Flour doesn't smell like face cream.",
+        "Cement is grey and gritty, not soft."
+      ],
+      "reveal": "Makeup! You follow powdery fingerprints to the ladder…",
+      "emoji": "💄",
+      "name": "Powdery fingerprints",
+      "found": "Powdery fingerprints all the way up the **ladder** to the dark stunt beam. The climber had **makeup on their hands**.",
+      "task": "mark",
+      "fact": "Makeup on hands",
+      "ask": "Tap everyone left with makeup on their hands.",
+      "why": "Rani and Tony both work with makeup.",
+      "card": "MAKEUP fingerprints on the stunt ladder"
+    },
+    {
+      "from": "💄 The fingerprints go up into the dark",
+      "question": "The stunt beam is twenty feet up, in total darkness. How did the climber see the rope?",
+      "options": [
+        "🕯️ A candle",
+        "🎈 They didn't, they guessed",
+        "🔦 A headlamp"
+      ],
+      "answer": 2,
+      "wrongWhy": [
+        "A candle up there would set the curtains on fire.",
+        "Cutting exactly halfway? That's no guess.",
+        null
+      ],
+      "reveal": "A headlamp! You climb up to the beam…",
+      "emoji": "🔦",
+      "name": "Headlamp",
+      "found": "A **headlamp**, left on the beam in a hurry. Its strap is smeared with beige powder.",
+      "task": "cross",
+      "fact": "Headlamp",
+      "ask": "Cross out everyone left who does NOT carry a headlamp.",
+      "why": "Jojo uses his phone torch, not a headlamp.",
+      "card": "A HEADLAMP left on the stunt beam"
+    }
+  ],
+  "culprit": "rani",
+  "confession": "\"He told the director to drop me after this film. 'Her makeup looks cheap,' in front of everyone. I wanted him to fall in front of everyone too.\"",
+  "escapeStory": "Rani drove off in the makeup van. Police stopped it at the toll gate, still full of her powder."
+}

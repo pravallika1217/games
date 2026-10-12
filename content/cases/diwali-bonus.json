@@ -1,0 +1,305 @@
+{
+  "id": "diwali-bonus",
+  "title": "The Diwali Bonus Heist",
+  "call": [
+    "Inspector {name}, the Diwali bonuses were stolen during the Tara Tech office party.",
+    "Fifty envelopes of cash, gone. Nobody has left the building."
+  ],
+  "arrival": "Fairy lights, half-eaten sweets, and eighty angry employees waiting for their bonus.",
+  "briefing": [
+    {
+      "emoji": "💰",
+      "label": "Stolen",
+      "value": "50 Diwali bonus envelopes"
+    },
+    {
+      "emoji": "🎆",
+      "label": "Time",
+      "value": "Sometime this evening"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "The HR room, 3rd floor"
+    },
+    {
+      "emoji": "❓",
+      "label": "When",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the gift box",
+    "objectEmoji": "🎁",
+    "spots": [
+      {
+        "title": "Ribbon",
+        "text": "Retied, but with a different knot from the shop's.",
+        "x": 0.5,
+        "y": 0.24
+      },
+      {
+        "title": "Inside",
+        "text": "Empty. All fifty envelopes are gone.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Bottom",
+        "text": "Tiny bits of coloured powder: pink, yellow and green.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "When were the envelopes taken?",
+    "options": [
+      "🏬 At the shop, before delivery",
+      "🪔 During the party, then the box was retied",
+      "🌅 This morning, before the party"
+    ],
+    "answer": 1,
+    "why": "Someone retied the ribbon with a new knot, and left party powder inside. It happened tonight, during the party."
+  },
+  "people": [
+    {
+      "id": "neha",
+      "name": "Sales Head Neha",
+      "emoji": "👩‍💼",
+      "group": "Sales",
+      "traits": [
+        {
+          "emoji": "🪔",
+          "text": "Lit diyas"
+        },
+        {
+          "emoji": "🥻",
+          "text": "Silk saree"
+        }
+      ],
+      "interview": {
+        "says": "Rangoli corner",
+        "alibi": "I was judging the rangoli contest all evening.",
+        "replies": [
+          "Sales did the rangoli, yes. All four of us.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "This wax is from the brass diyas YOU were lighting, Neha. It dripped on the ribbon while you retied it!",
+          "This gold zari thread matches the torn border of YOUR saree, Neha!"
+        ]
+      }
+    },
+    {
+      "id": "pooja",
+      "name": "Intern Pooja",
+      "emoji": "🙋‍♀️",
+      "group": "Sales",
+      "traits": [
+        {
+          "emoji": "🎤",
+          "text": "Sang karaoke"
+        },
+        {
+          "emoji": "🥻",
+          "text": "Silk saree"
+        }
+      ],
+      "interview": {
+        "says": "Karaoke stage",
+        "alibi": "I was singing on the karaoke stage. Everyone filmed me!",
+        "replies": [
+          "I drew the peacock in the rangoli. So what?",
+          "Diyas? I never touched one. I was holding the mic all night.",
+          "My saree has a silver border, not gold. Look!"
+        ],
+        "release": "Thirty phone videos show Pooja singing on stage all night."
+      }
+    },
+    {
+      "id": "farida",
+      "name": "Manager Farida",
+      "emoji": "🧕",
+      "group": "Sales",
+      "traits": [
+        {
+          "emoji": "🪔",
+          "text": "Lit diyas"
+        },
+        {
+          "emoji": "🥻",
+          "text": "Silk saree"
+        }
+      ],
+      "interview": {
+        "says": "Balcony",
+        "alibi": "I was lighting a hundred diyas on the balcony. It took forever!",
+        "replies": [
+          "Yes, I'm in Sales, and I did the rangoli.",
+          "I lit diyas, but on the balcony, far from the HR room. Ask the security guard.",
+          "My saree has no zari at all. It's plain silk, see?"
+        ],
+        "release": "The security guard watched Farida light diyas on the balcony all evening."
+      }
+    },
+    {
+      "id": "arun",
+      "name": "Sales Rep Arun",
+      "emoji": "🧑‍💼",
+      "group": "Sales",
+      "traits": [
+        {
+          "emoji": "🪔",
+          "text": "Lit diyas"
+        },
+        {
+          "emoji": "👔",
+          "text": "Kurta"
+        }
+      ]
+    },
+    {
+      "id": "rahul",
+      "name": "Coder Rahul",
+      "emoji": "👨‍💻",
+      "group": "IT",
+      "traits": [
+        {
+          "emoji": "🎤",
+          "text": "Sang karaoke"
+        },
+        {
+          "emoji": "👕",
+          "text": "T-shirt"
+        }
+      ]
+    },
+    {
+      "id": "lily",
+      "name": "Sysadmin Lily",
+      "emoji": "👩‍💻",
+      "group": "IT",
+      "traits": [
+        {
+          "emoji": "🪔",
+          "text": "Lit diyas"
+        },
+        {
+          "emoji": "🥻",
+          "text": "Silk saree"
+        }
+      ]
+    },
+    {
+      "id": "iyer",
+      "name": "HR Head Mr. Iyer",
+      "emoji": "👨‍🦳",
+      "group": "HR",
+      "traits": [
+        {
+          "emoji": "🍽️",
+          "text": "Served food"
+        },
+        {
+          "emoji": "👔",
+          "text": "Kurta"
+        }
+      ]
+    },
+    {
+      "id": "divya",
+      "name": "Receptionist Divya",
+      "emoji": "💁‍♀️",
+      "group": "HR",
+      "traits": [
+        {
+          "emoji": "🎤",
+          "text": "Sang karaoke"
+        },
+        {
+          "emoji": "🥻",
+          "text": "Silk saree"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "🎁 Pink, yellow and green powder in the box",
+      "question": "Coloured powder, on Diwali night. What is it from?",
+      "options": [
+        "🎨 Holi colours",
+        "🍬 Sweets",
+        "🌸 Rangoli"
+      ],
+      "answer": 2,
+      "wrongWhy": [
+        "Holi is in March, not on Diwali!",
+        "Sweets leave sugar, not coloured powder.",
+        null
+      ],
+      "reveal": "Rangoli! You check the rangoli contest sheet…",
+      "emoji": "🌸",
+      "name": "Rangoli sheet",
+      "found": "Only one team made rangoli tonight: **SALES**. The sheet has their names, and the same powder all over it.",
+      "task": "cross",
+      "fact": "Sales",
+      "ask": "Cross out everyone who is NOT in Sales.",
+      "why": "Only the Sales team had rangoli powder on their hands.",
+      "card": "RANGOLI powder: only Sales made rangoli"
+    },
+    {
+      "from": "🎀 Hard drops on the ribbon",
+      "question": "There are little drops of hard, smooth wax on the ribbon. Where did they drip from?",
+      "options": [
+        "🧴 Hand cream",
+        "🪔 A lit diya",
+        "🧀 Cheese"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Hand cream is soft and wet, not hard.",
+        null,
+        "Cheese? At an office party? Focus, Inspector!"
+      ],
+      "reveal": "A diya! You check the diyas on the 3rd floor…",
+      "emoji": "🪔",
+      "name": "Diya wax",
+      "found": "The **wax** matches the big brass **diyas**. Someone retied the ribbon holding a lit diya, and caught a **gold thread** on the knot.",
+      "task": "mark",
+      "fact": "Lit diyas",
+      "ask": "Tap everyone left who lit diyas tonight.",
+      "why": "Neha, Farida and Arun all lit diyas.",
+      "card": "DIYA wax on the ribbon"
+    },
+    {
+      "from": "🧵 A gold thread caught in the knot",
+      "question": "The thread is real gold zari, the kind on a fancy border. What was the thief wearing?",
+      "options": [
+        "👔 A plain kurta",
+        "🧥 A raincoat",
+        "🥻 A silk saree"
+      ],
+      "answer": 2,
+      "wrongWhy": [
+        "A plain kurta has no gold thread.",
+        "It isn't raining tonight.",
+        null
+      ],
+      "reveal": "A silk saree! Pandu checks the thread under his torch…",
+      "emoji": "🧵",
+      "name": "Zari thread",
+      "found": "Real **zari** gold thread, torn from a **silk saree** border.",
+      "task": "cross",
+      "fact": "Silk saree",
+      "ask": "Cross out everyone left who is NOT wearing a silk saree.",
+      "why": "Arun is wearing a kurta.",
+      "card": "ZARI thread from a SILK SAREE"
+    }
+  ],
+  "culprit": "neha",
+  "confession": "\"Twelve years in Sales, and this year they gave me no bonus. So I took everyone's.\"",
+  "escapeStory": "Neha took a taxi straight to the airport. She was stopped at check-in with fifty envelopes in her handbag."
+}

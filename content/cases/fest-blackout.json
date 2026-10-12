@@ -1,0 +1,305 @@
+{
+  "id": "fest-blackout",
+  "title": "Blackout at the College Fest",
+  "call": [
+    "Inspector {name}, the power was cut at the Spandan college fest, right in the band final.",
+    "Two thousand students in the dark. The principal thinks it was on purpose."
+  ],
+  "arrival": "Phone torches everywhere. Two bands glare at each other across the dark stage.",
+  "briefing": [
+    {
+      "emoji": "🎸",
+      "label": "What",
+      "value": "The main power cable was cut"
+    },
+    {
+      "emoji": "🕘",
+      "label": "Time",
+      "value": "9 PM, as The Rockets walked on stage"
+    },
+    {
+      "emoji": "📍",
+      "label": "Place",
+      "value": "Behind the main stage"
+    },
+    {
+      "emoji": "❓",
+      "label": "How",
+      "value": "Unknown. That's your job, Inspector.",
+      "unknown": true
+    }
+  ],
+  "examination": {
+    "title": "Examine the power cable",
+    "objectEmoji": "🔌",
+    "spots": [
+      {
+        "title": "Switchboard",
+        "text": "The main switch is still ON.",
+        "x": 0.5,
+        "y": 0.26
+      },
+      {
+        "title": "Cable end",
+        "text": "Cut clean through, in one go.",
+        "x": 0.3,
+        "y": 0.58
+      },
+      {
+        "title": "Floor",
+        "text": "No sparks, no burns. The cutter knew what they were doing.",
+        "x": 0.7,
+        "y": 0.58
+      }
+    ],
+    "question": "What caused the blackout?",
+    "options": [
+      "⚡ A power cut in the city",
+      "✂️ Someone cut the cable",
+      "🐀 A rat chewed it"
+    ],
+    "answer": 1,
+    "why": "The switch is still on and the cable is cut clean through. Rats chew; they don't cut."
+  },
+  "people": [
+    {
+      "id": "zoya",
+      "name": "Singer Zoya",
+      "emoji": "🎤",
+      "group": "Midnight Raga",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🏍️",
+          "text": "Rides a bike"
+        }
+      ],
+      "interview": {
+        "says": "Green room",
+        "alibi": "I was warming up my voice in the green room. Aaa-aaa-aaa!",
+        "replies": [
+          "Backstage pass? Every band member has one.",
+          "My bike is electric. No chain, no grease. Look at my hands!",
+          "Yes, we'd win. But I want to beat them by singing, not by cheating!"
+        ],
+        "release": "The green room camera shows Zoya warming up her voice the whole time."
+      }
+    },
+    {
+      "id": "bablu",
+      "name": "Drummer Bablu",
+      "emoji": "🥁",
+      "group": "Midnight Raga",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🏍️",
+          "text": "Rides a bike"
+        }
+      ],
+      "interview": {
+        "says": "Side stage",
+        "alibi": "I was setting up my drums on the side stage the whole time.",
+        "replies": [
+          "Everyone in a band has a pass, Inspector.",
+          null,
+          null
+        ],
+        "gotchas": [
+          null,
+          "That's YOUR bike behind the stage, Bablu. Fresh grease on the chain, and the same grease on these gloves!",
+          "You're the one who reminded the committee about this rule yesterday, Bablu!"
+        ]
+      }
+    },
+    {
+      "id": "nikhil",
+      "name": "Guitarist Nikhil",
+      "emoji": "🎸",
+      "group": "Midnight Raga",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🚌",
+          "text": "Came by bus"
+        }
+      ],
+      "interview": {
+        "says": "Corridor",
+        "alibi": "I was tuning my guitar in the corridor. Six strings, twenty minutes.",
+        "replies": [
+          "A pass, yes. I'm in the band.",
+          "A bike? I came on the college bus, Inspector.",
+          "I want to win fair. Our song is better anyway!"
+        ],
+        "release": "Two Rockets members saw Nikhil tuning his guitar in the corridor."
+      }
+    },
+    {
+      "id": "ritu",
+      "name": "Superfan Ritu",
+      "emoji": "🙋‍♀️",
+      "group": "Midnight Raga",
+      "traits": [
+        {
+          "emoji": "🎟️",
+          "text": "Audience ticket"
+        },
+        {
+          "emoji": "🏍️",
+          "text": "Rides a bike"
+        }
+      ]
+    },
+    {
+      "id": "aryan",
+      "name": "Singer Aryan",
+      "emoji": "🧑‍🎤",
+      "group": "The Rockets",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🏍️",
+          "text": "Rides a bike"
+        }
+      ]
+    },
+    {
+      "id": "tanya",
+      "name": "Bassist Tanya",
+      "emoji": "👩‍🎤",
+      "group": "The Rockets",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🚶",
+          "text": "Walked"
+        }
+      ]
+    },
+    {
+      "id": "menon",
+      "name": "Judge Prof. Menon",
+      "emoji": "👨‍🏫",
+      "group": "Fest team",
+      "traits": [
+        {
+          "emoji": "🎟️",
+          "text": "Audience ticket"
+        },
+        {
+          "emoji": "🚌",
+          "text": "Came by bus"
+        }
+      ]
+    },
+    {
+      "id": "sana",
+      "name": "Volunteer Sana",
+      "emoji": "🧑‍💼",
+      "group": "Fest team",
+      "traits": [
+        {
+          "emoji": "🎫",
+          "text": "Backstage pass"
+        },
+        {
+          "emoji": "🚶",
+          "text": "Walked"
+        }
+      ]
+    }
+  ],
+  "leads": [
+    {
+      "from": "✂️ A thick cable, cut clean through",
+      "question": "That cable is thick, and full of live electricity. What would you need to cut it safely?",
+      "options": [
+        "✂️ Kitchen scissors",
+        "🧤 Rubber gloves and a big cutter",
+        "🔪 A butter knife"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Kitchen scissors can't cut a cable that thick.",
+        null,
+        "A butter knife? It would take all night."
+      ],
+      "reveal": "Gloves and a cutter! You search behind the stage…",
+      "emoji": "🧤",
+      "name": "Rubber gloves",
+      "found": "**Rubber gloves** and a cable cutter, stuffed in a crate **BACKSTAGE**. Only people with a **backstage pass** can get there. The gloves have black grease on the fingers.",
+      "task": "cross",
+      "fact": "Backstage pass",
+      "ask": "Cross out everyone who does NOT have a backstage pass.",
+      "why": "The audience can't get backstage.",
+      "card": "Gloves and a cutter hidden BACKSTAGE"
+    },
+    {
+      "from": "🧤 Black grease on the glove fingers",
+      "question": "The grease is black, thick and oily. Where does that kind of grease come from?",
+      "options": [
+        "🏍️ A motorbike chain",
+        "🍳 Cooking oil",
+        "🎨 Paint"
+      ],
+      "answer": 0,
+      "wrongWhy": [
+        null,
+        "Cooking oil is yellow and thin, not black.",
+        "Paint isn't oily like this."
+      ],
+      "reveal": "A bike chain! You check the bikes behind the stage…",
+      "emoji": "🏍️",
+      "name": "Greasy bike",
+      "found": "One **motorbike** is parked right behind the stage, its chain freshly greased. Its rider fixed it just before the show.",
+      "task": "mark",
+      "fact": "Rides a bike",
+      "ask": "Tap everyone left who rides a bike.",
+      "why": "Zoya, Bablu and Aryan all ride bikes.",
+      "card": "GREASE from a bike chain on the gloves"
+    },
+    {
+      "from": "🎸 The power went out just as The Rockets walked on",
+      "question": "If The Rockets couldn't play, who would win the band final?",
+      "options": [
+        "🚀 The Rockets anyway",
+        "🎸 Their rivals, Midnight Raga",
+        "🎤 Nobody. It gets cancelled"
+      ],
+      "answer": 1,
+      "wrongWhy": [
+        "Why would a band ruin its own show?",
+        null,
+        "Check the rule book, Inspector."
+      ],
+      "reveal": "Their rivals! You open the fest rule book…",
+      "emoji": "📕",
+      "name": "Rule book",
+      "found": "Rule 7: **\"If a band can't play, the other band wins.\"** Only **MIDNIGHT RAGA** gains from the blackout.",
+      "task": "cross",
+      "fact": "Midnight Raga",
+      "ask": "Cross out everyone left who is NOT in Midnight Raga.",
+      "why": "Aryan, Tanya and Sana don't gain anything from it.",
+      "card": "Only MIDNIGHT RAGA wins if the Rockets can't play"
+    }
+  ],
+  "culprit": "bablu",
+  "confession": "\"We lost to the Rockets three years in a row. Not this time. No power, no Rockets.\"",
+  "escapeStory": "Bablu rode off on his bike. The traffic police stopped him at the college gate, gloves still in his pocket."
+}

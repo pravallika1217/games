@@ -113,7 +113,7 @@ class GameRulesTest {
 
     @Test
     fun `following every lead leaves exactly the suspects`() {
-        listOf("sangeet", "hostel", "night-express").map(::load).forEach { file ->
+        schedule.cases.map(::load).forEach { file ->
             val s = solved(file)
             assertTrue(s.isDone)
             assertEquals(file.suspects.map { it.id }, s.stillIn.map { it.id })
@@ -133,7 +133,7 @@ class GameRulesTest {
 
     @Test
     fun `innocents answer every piece of evidence and are never caught`() {
-        listOf("sangeet", "hostel", "night-express").map(::load).forEach { file ->
+        schedule.cases.map(::load).forEach { file ->
             var q = Questioning(file)
             file.suspects.indices.filter { it != file.culpritIndex }.forEach { s ->
                 file.leads.indices.forEach { c ->
