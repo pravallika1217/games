@@ -1,4 +1,4 @@
-# 🕵️ ALIBI
+# 🕵️ ALIBI: Daily Detective
 
 **One mystery a day, and you're the detective.** A story-driven daily puzzle game for Android.
 
