@@ -5,7 +5,7 @@ Everything the Play Console asks for, in order. Files mentioned here are in this
 ## 0. Before you start
 
 - [ ] The app runs on your phone, and you've played all the cases with **Next day ▶**.
-- [ ] Your email is filled in at the bottom of `PRIVACY.md`, and pushed to `main`.
+- [x] Your email is filled in at the bottom of `PRIVACY.md`, and pushed to `main`.
 - [ ] `launchDay` in `content/cases/schedule.json` is set to your real launch date.
 
 ## 1. Create the developer account (one time, about $25)
