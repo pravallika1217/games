@@ -31,7 +31,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val store = ProgressStore(application)
     private val cases = CaseRepository(application)
     val sfx = Sfx(application).apply { enabled = store.soundOn }
-    private val today = LocalDate.now().toEpochDay()
+    /** Today, plus the test-only day jump (always 0 in the Play Store version). */
+    private var today = LocalDate.now().toEpochDay() + store.testDayOffset
 
     /** Today's case. Starts with what's on the phone, and may update once the newest one downloads. */
     var case: PlayableCase by mutableStateOf(cases.caseFor(today))
@@ -104,11 +105,34 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var startedAt = 0L
 
     init {
+        downloadNewCases()
+    }
+
+    private fun downloadNewCases() {
+        val day = today
         viewModelScope.launch {
-            val changed = withContext(Dispatchers.IO) { runCatching { cases.refresh(today) }.getOrDefault(false) }
+            val changed = withContext(Dispatchers.IO) { runCatching { cases.refresh(day) }.getOrDefault(false) }
             // Only swap the case before the player has started it.
-            if (changed && screen in setOf(Screen.Name, Screen.Home)) case = cases.caseFor(today)
+            if (changed && day == today && screen in setOf(Screen.Name, Screen.Home)) case = cases.caseFor(today)
         }
+    }
+
+    // ---- Testing (only shown in debug builds) ----
+
+    /** How many days ahead the test button has moved the clock. */
+    var testDayOffset by mutableIntStateOf(store.testDayOffset)
+        private set
+
+    /** Pretends it's another day, to check that each day brings the next case. */
+    fun testJumpDays(days: Int) {
+        if (!BuildConfig.DEBUG) return
+        testDayOffset = if (days == 0) 0 else testDayOffset + days
+        store.testDayOffset = testDayOffset
+        today = LocalDate.now().toEpochDay() + testDayOffset
+        case = cases.caseFor(today)
+        todaysResult = store.resultFor(today)
+        streak = store.streak(today)
+        downloadNewCases()
     }
 
     fun toggleSound() {

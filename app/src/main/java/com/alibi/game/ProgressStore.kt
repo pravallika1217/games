@@ -15,6 +15,11 @@ class ProgressStore(context: Context) {
         get() = prefs.getBoolean(KEY_SOUND, true)
         set(value) = prefs.edit().putBoolean(KEY_SOUND, value).apply()
 
+    /** Test builds only: how many days ahead the "next day" button has moved the clock. */
+    var testDayOffset: Int
+        get() = if (BuildConfig.DEBUG) prefs.getInt(KEY_TEST_DAYS, 0) else 0
+        set(value) = prefs.edit().putInt(KEY_TEST_DAYS, value).apply()
+
     val solvedCount: Int get() = prefs.getInt(KEY_SOLVED, 0)
 
     /** Current streak: still alive if the last finished case was today or yesterday. */
@@ -59,5 +64,6 @@ class ProgressStore(context: Context) {
         const val KEY_SOLVED = "cases_solved"
         const val KEY_LAST_DAY = "last_day"
         const val KEY_STREAK = "streak"
+        const val KEY_TEST_DAYS = "test_day_offset"
     }
 }

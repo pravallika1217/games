@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.alibi.game.BuildConfig
 import com.alibi.game.GameViewModel
 import kotlinx.coroutines.delay
 
@@ -158,7 +159,37 @@ fun HomeScreen(vm: GameViewModel) {
             }
         }
         Text("🎖️ Rank: ${vm.careerRank.title} · ${vm.solvedCount} solved", color = Noir.Dim, fontSize = 13.sp)
+        if (BuildConfig.DEBUG) TestDayPanel(vm)
     }
+}
+
+/** Only in test builds: jump to tomorrow to check that a new case shows up each day. */
+@Composable
+private fun TestDayPanel(vm: GameViewModel) {
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).border(1.dp, Noir.Line, RoundedCornerShape(14.dp)).padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            "🧪 TEST BUILD · " + if (vm.testDayOffset == 0) "real date" else "${vm.testDayOffset} day(s) ahead",
+            color = Noir.Dim, fontSize = 12.sp, fontFamily = Noir.Typewriter,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TestButton("Next day ▶", Modifier.weight(1f)) { vm.testJumpDays(1) }
+            TestButton("Back to today", Modifier.weight(1f)) { vm.testJumpDays(0) }
+        }
+    }
+}
+
+@Composable
+private fun TestButton(text: String, modifier: Modifier, onClick: () -> Unit) {
+    Text(
+        text,
+        color = Noir.Text,
+        fontSize = 14.sp,
+        textAlign = TextAlign.Center,
+        modifier = modifier.clip(RoundedCornerShape(10.dp)).background(Noir.Panel2).clickable(onClick = onClick).padding(vertical = 10.dp),
+    )
 }
 
 /** A real-looking incoming call. Answer, hear two lines, go. */

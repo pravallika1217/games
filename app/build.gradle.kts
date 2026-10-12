@@ -6,12 +6,13 @@ plugins {
 
 android {
     namespace = "com.alibi.game"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.alibi.game"
+        // The app's permanent ID on the Play Store. It can't change after the first upload.
+        applicationId = "com.pravallika.alibi"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
 

@@ -23,8 +23,9 @@ one big button at the bottom.
 
 ## Run it
 
-1. Open this folder in **Android Studio** (Ladybug or newer).
-2. Let Gradle sync, then press **Run** on a phone or emulator (Android 7.0+).
+1. Open this folder in **Android Studio** (Meerkat or newer).
+2. Let Gradle sync. If it asks for "Android SDK Platform 36", click the link to install it.
+3. Press **Run** on a phone or emulator (Android 7.0+).
 
 Run the game-logic tests (no Android SDK needed):
 
@@ -71,6 +72,27 @@ Like Wordle and Connections, every case is a small data file and the app fetches
 
 **To publish a new case:** add `<id>.json` to `content/cases`, add the id to the end of
 `schedule.json`, run `./gradlew :engine:test`, and push. Players get it without an app update.
+
+## Testing the daily cases
+
+Builds run from Android Studio are **test builds**. Their home screen has a small
+🧪 **TEST BUILD** box at the bottom:
+
+- **Next day ▶** pretends it's tomorrow: the next case number and story should appear.
+- **Back to today** returns to the real date.
+
+The box doesn't exist in the Play Store version (the release build).
+
+## Publishing on Google Play
+
+Ready in the project:
+- App ID `com.pravallika.alibi` (in `app/build.gradle.kts`). It can't change after the first
+  upload, so change it before that if you want a different one.
+- App icon (adaptive, plus older-phone PNGs), and `store/icon-512.png` for the Play listing.
+- Targets Android 16 (API 36).
+
+Before each upload, add 1 to `versionCode` in `app/build.gradle.kts`. Build the upload file
+with **Build → Generate Signed App Bundle**, and back up the key file it creates.
 
 ## Scoring
 
