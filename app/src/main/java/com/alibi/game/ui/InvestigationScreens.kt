@@ -6,9 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -131,25 +133,25 @@ fun LeadsScreen(vm: GameViewModel) {
                 Text("From: ${lead.from}", color = Color(0xFF6B4A12), fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
                 Text("🤔 ${lead.question}", color = Noir.Ink, fontFamily = Noir.Typewriter, fontSize = 16.sp, lineHeight = 22.sp)
                 lead.options.indices.chunked(2).forEach { row ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Buttons side by side are always the same height, even when one label wraps.
+                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         row.forEach { i ->
                             val wrong = i in inv.wrongOptions
                             val right = inv.clueOpen && i == lead.answer
-                            Text(
-                                lead.options[i],
-                                color = Noir.Ink,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 15.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
+                            Box(
+                                Modifier
                                     .weight(1f)
+                                    .fillMaxHeight()
                                     .graphicsLayer { alpha = if (wrong) 0.55f else 1f }
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(when { right -> Color(0xFFDFF3E5); wrong -> Color(0xFFF8DCD9); else -> Color(0xFFFFFAF0) })
                                     .border(2.dp, when { right -> Color(0xFF2C8A52); wrong -> Noir.String; else -> Noir.Ink.copy(alpha = 0.25f) }, RoundedCornerShape(10.dp))
                                     .clickable(enabled = !inv.clueOpen && !wrong) { vm.answerLead(i) }
                                     .padding(horizontal = 8.dp, vertical = 11.dp),
-                            )
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(lead.options[i], color = Noir.Ink, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, textAlign = TextAlign.Center)
+                            }
                         }
                         if (row.size == 1) Spacer(Modifier.weight(1f))
                     }
