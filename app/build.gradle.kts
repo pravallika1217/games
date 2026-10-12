@@ -33,7 +33,7 @@ android {
         rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
     }
     signingConfigs {
-        if (!keystore.isEmpty) create("release") {
+        if (!keystore.isEmpty()) create("release") {
             storeFile = file(keystore.getProperty("storeFile"))
             storePassword = keystore.getProperty("storePassword")
             keyAlias = keystore.getProperty("keyAlias")
@@ -44,7 +44,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            if (!keystore.isEmpty) signingConfig = signingConfigs.getByName("release")
+            if (!keystore.isEmpty()) signingConfig = signingConfigs.getByName("release")
         }
     }
 
