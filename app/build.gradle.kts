@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "0.1.0"
+        versionName = "1.0.0"
 
         // Where new cases are downloaded from. Any static web host works (GitHub Pages,
         // Firebase Hosting…). It must serve the files in content/cases. Leave it empty to only
