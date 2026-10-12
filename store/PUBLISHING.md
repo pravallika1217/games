@@ -37,7 +37,7 @@ Everything the Play Console asks for, in order. Files mentioned here are in this
 | Feature graphic (1024×500) | `feature-graphic.png` |
 | Phone screenshots (at least 2, best 4–6) | Take them on your phone: call screen, examine, clues, GOTCHA, result |
 | Category | Game → **Puzzle** |
-| Contact email | Your email |
+| Contact email | alibi.dailydetective@gmail.com |
 | Privacy policy | `https://github.com/pravallika1217/games/blob/main/PRIVACY.md` |
 
 ## 5. App content (Policy → App content): answers

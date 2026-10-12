@@ -44,4 +44,4 @@ If this policy changes, the new version will be posted on this page with a new d
 
 ## Contact
 
-Questions? Email: **bhumandlapravallika@gmail.com**
+Questions? Email: **alibi.dailydetective@gmail.com**
