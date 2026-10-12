@@ -5,47 +5,69 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- A dark wall with light falling through venetian blinds, edges in shadow. -->
+    <!-- The clue wall: pinned notes tied with red string. The glowing pin is the culprit. -->
     <path
         android:pathData="M0,0 L108,0 L108,108 L0,108 Z"
-        android:fillColor="#101318" />
+        android:fillColor="#151922" />
     <path
-        android:pathData="M0,36 L108,6 L108,12.5 L0,42.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.55" />
+        android:pathData="M25,24 L41,22.5 L42.2,34 L26.2,35.5 Z"
+        android:fillColor="#F3EAD6"
+        android:fillAlpha="0.14" />
     <path
-        android:pathData="M0,48 L108,18 L108,24.5 L0,54.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.485" />
+        android:pathData="M64,23.5 L83,25.5 L81.8,38.5 L62.8,36.5 Z"
+        android:fillColor="#F3EAD6"
+        android:fillAlpha="0.22" />
     <path
-        android:pathData="M0,60 L108,30 L108,36.5 L0,66.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.42" />
+        android:pathData="M68,29 L76,29.8 M67.6,32.4 L78,33.4"
+        android:strokeColor="#F3EAD6"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.4" />
     <path
-        android:pathData="M0,72 L108,42 L108,48.5 L0,78.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.355" />
+        android:pathData="M74,46 L88,47.5 L87,58.5 L73,57 Z"
+        android:fillColor="#F3EAD6"
+        android:fillAlpha="0.18" />
     <path
-        android:pathData="M0,84 L108,54 L108,60.5 L0,90.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.29" />
+        android:pathData="M69,62 L84,63.5 L83,74 L68,72.5 Z"
+        android:fillColor="#F3EAD6"
+        android:fillAlpha="0.15" />
     <path
-        android:pathData="M0,96 L108,66 L108,72.5 L0,102.5 Z"
-        android:fillColor="#F3B544"
-        android:fillAlpha="0.225" />
+        android:pathData="M33,27 L73,27.5 L76,65"
+        android:strokeColor="#C8322B"
+        android:strokeWidth="1.3"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.9" />
     <path
-        android:pathData="M0,108 L108,78 L108,84.5 L0,114.5 Z"
+        android:pathData="M73,27.5 L81,49"
+        android:strokeColor="#C8322B"
+        android:strokeWidth="1.3"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.9" />
+    <path
+        android:pathData="M31.1,27 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z"
+        android:fillColor="#E9DFC8" />
+    <path
+        android:pathData="M79.1,49 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z"
+        android:fillColor="#E9DFC8" />
+    <path
+        android:pathData="M74.1,65 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z"
+        android:fillColor="#E9DFC8" />
+    <path
+        android:pathData="M68.8,27.5 a4.2,4.2 0 1,0 8.4,0 a4.2,4.2 0 1,0 -8.4,0 Z"
         android:fillColor="#F3B544"
-        android:fillAlpha="0.16" />
+        android:fillAlpha="0.25" />
+    <path
+        android:pathData="M70.6,27.5 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0 Z"
+        android:fillColor="#F3B544" />
     <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="radial"
                 android:centerX="54"
-                android:centerY="50"
-                android:gradientRadius="62">
-                <item android:offset="0.45" android:color="#00101318" />
-                <item android:offset="1" android:color="#E6101318" />
+                android:centerY="48"
+                android:gradientRadius="64">
+                <item android:offset="0.5" android:color="#00151922" />
+                <item android:offset="1" android:color="#D9090B10" />
             </gradient>
         </aapt:attr>
     </path>
