@@ -39,16 +39,21 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alibi.game.BuildConfig
 import com.alibi.game.GameViewModel
 import kotlinx.coroutines.delay
+
+/** Google Play requires a link to the privacy policy inside the app as well as on the store page. */
+const val PRIVACY_POLICY_URL = "https://github.com/pravallika1217/games/blob/main/PRIVACY.md"
 
 /** First launch: one question, one button. */
 @Composable
@@ -160,6 +165,15 @@ fun HomeScreen(vm: GameViewModel) {
         }
         Text("🎖️ Rank: ${vm.careerRank.title} · ${vm.solvedCount} solved", color = Noir.Dim, fontSize = 13.sp)
         if (BuildConfig.DEBUG) TestDayPanel(vm)
+        val links = LocalUriHandler.current
+        Text(
+            "Privacy policy",
+            color = Noir.Dim,
+            fontSize = 13.sp,
+            textDecoration = TextDecoration.Underline,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { links.openUri(PRIVACY_POLICY_URL) }.padding(8.dp),
+        )
     }
 }
 

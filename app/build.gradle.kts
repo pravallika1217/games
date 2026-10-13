@@ -15,7 +15,7 @@ android {
         applicationId = "com.pravallika.alibi"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.0"
 
         // Where new cases are downloaded from. Any static web host works (GitHub Pages,
